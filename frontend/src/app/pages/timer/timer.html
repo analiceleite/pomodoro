@@ -1,0 +1,73 @@
+<div class="screensaver-container" [ngClass]="'phase-' + ((timerState$ | async)?.currentPhase || 'work')">
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Phase Indicator -->
+    <div class="phase-section">
+      <div class="phase-indicator">
+        <mat-icon class="phase-icon">{{ getPhaseIcon((timerState$ | async)?.currentPhase || 'work') }}</mat-icon>
+        <span class="phase-title">{{ getPhaseTitle((timerState$ | async)?.currentPhase || 'work') }}</span>
+      </div>
+    </div>
+        <!-- Central Timer Display -->
+        <div class="timer-section">
+            <div class="timer-display" [class.pulse]="(timerState$ | async)?.isRunning">
+                {{ formattedTime$ | async }}
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="(progress$ | async) || 0"
+                        [style.background-color]="getPhaseColor((timerState$ | async)?.currentPhase || 'work')">
+                    </div>
+                </div>
+                <div class="progress-text">{{ Math.round((progress$ | async) || 0) }}% concluído</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="bottom-section">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <mat-icon class="stat-icon">check_circle</mat-icon>
+                <div class="stat-info">
+                    <div class="stat-value">{{ (timerState$ | async)?.cycles || 0 }}</div>
+                    <div class="stat-label">Ciclos Completos</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <mat-icon class="stat-icon">schedule</mat-icon>
+                <div class="stat-info">
+                    <div class="stat-value">{{ ((timerState$ | async)?.cycles || 0) * 25 }}min</div>
+                    <div class="stat-label">Tempo de Foco</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <mat-icon class="stat-icon">today</mat-icon>
+                <div class="stat-info">
+                    <div class="stat-value">{{ currentDayName }}</div>
+                    <div class="stat-label">Hoje</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-section">
+            <button mat-fab [color]="(timerState$ | async)?.isRunning ? 'accent' : 'primary'" (click)="toggleTimer()"
+                class="main-action-btn" [class.running]="(timerState$ | async)?.isRunning" extended>
+                <mat-icon>{{ (timerState$ | async)?.isRunning ? 'pause' : 'play_arrow' }}</mat-icon>
+                {{ (timerState$ | async)?.isRunning ? 'Pausar' : 'Iniciar' }}
+            </button>
+
+            <button mat-stroked-button color="warn" (click)="reset()" class="secondary-action-btn">
+                <mat-icon>refresh</mat-icon>
+                Resetar
+            </button>
+        </div>
+    </div>
+</div>

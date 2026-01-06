@@ -1,0 +1,425 @@
+.screensaver-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 64px); // Subtract toolbar height
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    background: #121212; // Dark mode base background
+
+    // Phase-based backgrounds - Dark mode
+    &.phase-work {
+        background: linear-gradient(135deg, #3e3a5e 0%, #2a2845 50%, #1e1e1e 100%);
+    }
+
+    &.phase-shortBreak {
+        background: linear-gradient(135deg, #2e4a3e 0%, #243d32 50%, #1e1e1e 100%);
+    }
+
+    &.phase-longBreak {
+        background: linear-gradient(135deg, #2e3e4a 0%, #24323d 50%, #1e1e1e 100%);
+    }
+
+    // Animated background pattern - Dark mode
+    &::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background:
+            radial-gradient(circle at 25% 25%, rgba(105, 100, 186, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 75% 75%, rgba(105, 100, 186, 0.05) 0%, transparent 50%);
+        animation: float-bg 20s ease-in-out infinite;
+        pointer-events: none;
+    }
+}
+
+@keyframes float-bg {
+
+    0%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    33% {
+        transform: rotate(120deg) scale(1.1);
+    }
+
+    66% {
+        transform: rotate(240deg) scale(0.9);
+    }
+}
+
+// Main Content Area
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 48px;
+    gap: 64px;
+}
+
+// Phase Section
+.phase-section {
+    text-align: center;
+
+    .phase-indicator {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        color: #e0e0e0; // Dark mode text color
+
+        .phase-icon {
+            font-size: 4rem;
+            width: 4rem;
+            height: 4rem;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+            animation: gentle-pulse 3s ease-in-out infinite;
+        }
+
+        .phase-title {
+            font-size: 2.5rem;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            color: #6964ba; // Primary color
+        }
+    }
+}
+
+@keyframes gentle-pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+// Timer Section
+.timer-section {
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+
+    .timer-display {
+        font-size: clamp(8rem, 20vw, 16rem);
+        font-weight: 100;
+        color: #e0e0e0; // Dark mode text color
+        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+        font-family: 'Roboto Mono', monospace;
+        letter-spacing: -8px;
+        margin-bottom: 48px;
+        line-height: 0.9;
+
+        &.pulse {
+            animation: timer-pulse 2s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes timer-pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: scale(0.98);
+    }
+}
+
+// Progress Bar
+.progress-bar-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #333333; // Dark mode background
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+
+        .progress-fill {
+            height: 100%;
+            background: #6964ba; // Primary color
+            border-radius: 4px;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 20px rgba(105, 100, 186, 0.5);
+            position: relative;
+
+            &::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 0;
+                width: 100px;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(105, 100, 186, 0.4), transparent);
+                animation: progress-shimmer 2s ease-in-out infinite;
+            }
+        }
+    }
+
+    .progress-text {
+        color: #b0b0b0; // Dark mode text color
+        font-size: 1.1rem;
+        margin-top: 16px;
+        font-weight: 300;
+        letter-spacing: 1px;
+    }
+}
+
+@keyframes progress-shimmer {
+    0% {
+        transform: translateX(-100px);
+    }
+
+    100% {
+        transform: translateX(600px);
+    }
+}
+
+// Bottom Section
+.bottom-section {
+    padding: 48px;
+    background: rgba(0, 0, 0, 0.3); // Darker for dark mode
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Stats Grid
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 48px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    background: rgba(30, 30, 30, 0.8); // Dark mode card background
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    color: #e0e0e0; // Dark mode text color
+
+    &:hover {
+        background: rgba(50, 50, 50, 0.8);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        border-color: rgba(105, 100, 186, 0.3);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        color: #6964ba; // Primary color for icons
+    }
+
+    .stat-info {
+        flex: 1;
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            color: #e0e0e0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #b0b0b0; // Muted text for labels
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 400;
+        }
+    }
+}
+
+// Action Section
+.action-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+
+    .main-action-btn {
+        height: 64px;
+        padding: 0 32px;
+        font-size: 1.2rem;
+        font-weight: 500;
+        background: #6964ba; // Primary color
+        color: white;
+        box-shadow: 0 8px 24px rgba(105, 100, 186, 0.4);
+        transition: all 0.3s ease;
+        letter-spacing: 1px;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(105, 100, 186, 0.6);
+            background: #7a75c5;
+        }
+
+        &.running {
+            background: #f57c00; // Accent color when running
+            animation: action-pulse 2s ease-in-out infinite;
+        }
+
+        mat-icon {
+            margin-right: 8px;
+            font-size: 1.5rem;
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+
+    .secondary-action-btn {
+        height: 48px;
+        padding: 0 24px;
+        color: #e0e0e0; // Dark mode text
+        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+
+        &:hover {
+            background: rgba(105, 100, 186, 0.2);
+            border-color: rgba(105, 100, 186, 0.4);
+            transform: translateY(-1px);
+        }
+
+        mat-icon {
+            margin-right: 8px;
+        }
+    }
+}
+
+@keyframes action-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 8px 24px rgba(245, 124, 0, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 8px 32px rgba(245, 124, 0, 0.6);
+    }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+    .screensaver-container {
+        top: 64px;
+        height: calc(100vh - 64px);
+    }
+
+    .main-content {
+        padding: 24px;
+        gap: 32px;
+    }
+
+    .phase-indicator {
+        .phase-icon {
+            font-size: 3rem !important;
+            width: 3rem !important;
+            height: 3rem !important;
+        }
+
+        .phase-title {
+            font-size: 1.8rem !important;
+            letter-spacing: 2px !important;
+        }
+    }
+
+    .timer-display {
+        letter-spacing: -4px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .bottom-section {
+        padding: 24px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 32px;
+    }
+
+    .stat-card {
+        padding: 16px;
+
+        .stat-icon {
+            font-size: 2rem !important;
+            width: 2rem !important;
+            height: 2rem !important;
+        }
+
+        .stat-value {
+            font-size: 1.5rem !important;
+        }
+    }
+
+    .action-section {
+        flex-direction: column;
+        gap: 16px;
+
+        .main-action-btn {
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .secondary-action-btn {
+            width: 100%;
+            max-width: 200px;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .screensaver-container {
+        top: 56px;
+        height: calc(100vh - 56px);
+    }
+
+    .timer-display {
+        font-size: clamp(4rem, 15vw, 8rem) !important;
+    }
+
+    .progress-bar-container {
+        .progress-text {
+            font-size: 0.9rem;
+        }
+    }
+}

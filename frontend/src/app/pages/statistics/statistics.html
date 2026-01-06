@@ -1,0 +1,126 @@
+<div class="statistics-container">
+  <!-- Summary Cards -->
+  <div class="summary-grid">
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <mat-icon>schedule</mat-icon>
+        </div>
+        <div class="summary-data">
+          <div class="summary-value">{{ totalHours.toFixed(1) }}h</div>
+          <div class="summary-label">Total de Horas</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <mat-icon>today</mat-icon>
+        </div>
+        <div class="summary-data">
+          <div class="summary-value">{{ todayHours.toFixed(1) }}h</div>
+          <div class="summary-label">Hoje</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="summary-data">
+          <div class="summary-value">{{ averageHours.toFixed(1) }}h</div>
+          <div class="summary-label">Média Diária</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="summary-card">
+      <mat-card-content>
+        <div class="summary-icon" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+          <mat-icon>local_fire_department</mat-icon>
+        </div>
+        <div class="summary-data">
+          <div class="summary-value">{{ streak }}</div>
+          <div class="summary-label">Dias Seguidos</div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Main Statistics Card -->
+  <mat-card class="stats-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>bar_chart</mat-icon>
+        Histórico de Estudo
+      </mat-card-title>
+      <mat-card-subtitle>Últimos 7 dias</mat-card-subtitle>
+    </mat-card-header>
+    
+    <mat-card-content>
+      <div class="empty-state" *ngIf="stats.length === 0">
+        <mat-icon>info</mat-icon>
+        <p>Nenhuma estatística disponível ainda.</p>
+        <p class="empty-subtitle">Comece a usar o Pomodoro Timer!</p>
+      </div>
+
+      <div class="stats-list" *ngIf="stats.length > 0">
+        <div class="stat-item" *ngFor="let stat of stats; let i = index" 
+             [class.today]="isToday(stat.date)"
+             [style.animation-delay]="i * 0.05 + 's'">
+          <div class="stat-header">
+            <div class="stat-date">
+              <mat-icon class="calendar-icon">event</mat-icon>
+              <span class="date-text">{{ formatDate(stat.date) }}</span>
+              <span class="today-badge" *ngIf="isToday(stat.date)">Hoje</span>
+            </div>
+            <div class="stat-hours">{{ stat.hours.toFixed(1) }}h</div>
+          </div>
+          
+          <div class="stat-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="getProgressPercentage(stat.hours)"
+                   [style.background]="getProgressColor(stat.hours)">
+              </div>
+            </div>
+            <div class="progress-info">
+              <span class="cycles-count">
+                <mat-icon>check_circle</mat-icon>
+                {{ calculateCycles(stat.hours) }} ciclos
+              </span>
+              <span class="percentage">{{ getProgressPercentage(stat.hours) }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Weekly Chart Card -->
+  <mat-card class="chart-card" *ngIf="stats.length > 0">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>show_chart</mat-icon>
+        Visão Semanal
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="chart-container">
+        <div class="chart-bar" *ngFor="let stat of stats">
+          <div class="bar-wrapper">
+            <div class="bar" 
+                 [style.height.%]="getChartHeight(stat.hours)"
+                 [style.background]="getProgressColor(stat.hours)">
+              <span class="bar-value">{{ stat.hours.toFixed(1) }}</span>
+            </div>
+          </div>
+          <div class="bar-label">{{ getDayName(stat.date) }}</div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

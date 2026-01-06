@@ -263,10 +263,10 @@ export class PictureInPictureService {
           background: var(--phase-color, #6964ba);
         }
         .btn-accent {
-          background: #f57c00;
+          background: #ff9800; /* Adjusted to a softer orange */
         }
         .btn-warn {
-          background: #f44336;
+          background: #e57373; /* Adjusted to a softer red */
         }
         .btn-running {
           animation: pulse-btn 2s infinite;
@@ -306,9 +306,9 @@ export class PictureInPictureService {
       
       <script>
         const colors = {
-          work: '#e53935',
-          shortBreak: '#43a047', 
-          longBreak: '#1e88e5'
+          work: '#6964ba', // Softer purple for work phase
+          shortBreak: '#4caf50', // Softer green for short break
+          longBreak: '#2196f3'  // Softer blue for long break
         };
         
         const phases = {

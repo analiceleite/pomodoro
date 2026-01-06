@@ -7,6 +7,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class PictureInPictureService {
   private isInPiP$ = new BehaviorSubject<boolean>(false);
   private pipWindow: Window | null = null;
+  private lastWindowPosition: { x: number; y: number } | null = null;
+  private isDragging = false;
 
   get isInPictureInPicture$(): Observable<boolean> {
     return this.isInPiP$.asObservable();
@@ -89,12 +91,18 @@ export class PictureInPictureService {
   }
 
   private enterCleanPopupPiP(): void {
+    // Usar posição salva ou posição padrão
+    const defaultX = Math.max(0, screen.width - 320);
+    const defaultY = 100;
+    const x = this.lastWindowPosition?.x ?? defaultX;
+    const y = this.lastWindowPosition?.y ?? defaultY;
+    
     const windowFeatures = [
       'width=300',
-      'height=300',
-      'top=100',
-      'left=' + (screen.width - 320),
-      'resizable=no',
+      'height=350',
+      `top=${y}`,
+      `left=${x}`,
+      'resizable=yes',
       'scrollbars=no',
       'toolbar=no',
       'menubar=no',
@@ -102,7 +110,7 @@ export class PictureInPictureService {
       'directories=no',
       'status=no',
       'alwaysRaised=yes',
-      'dependent=yes',
+      'dependent=no',  // Permite mover entre monitores
     ].join(',');
 
     // Use about:blank para URL limpa
@@ -112,12 +120,24 @@ export class PictureInPictureService {
       this.setupCleanPopupWindow();
       this.isInPiP$.next(true);
 
-      // Monitor fechamento da janela
+      // Monitor fechamento da janela e posição
       const checkClosed = setInterval(() => {
         if (this.pipWindow?.closed) {
           clearInterval(checkClosed);
           this.isInPiP$.next(false);
           this.pipWindow = null;
+        } else {
+          // Salvar posição atual da janela
+          try {
+            if (this.pipWindow) {
+              this.lastWindowPosition = {
+                x: this.pipWindow.screenX || this.pipWindow.screenLeft || 0,
+                y: this.pipWindow.screenY || this.pipWindow.screenTop || 0
+              };
+            }
+          } catch (error) {
+            // Ignorar erros de acesso à posição da janela
+          }
         }
       }, 1000);
     }
@@ -150,16 +170,42 @@ export class PictureInPictureService {
           user-select: none;
           overflow: hidden;
           position: relative;
+          margin: 0;
+          padding: 0;
+        }
+        .drag-handle {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 30px;
+          cursor: move;
+          background: transparent;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .drag-handle::before {
+          content: '⋮⋮';
+          color: rgba(255, 255, 255, 0.3);
+          font-size: 12px;
+          letter-spacing: 2px;
+          pointer-events: none;
+        }
+        .drag-handle:hover::before {
+          color: rgba(255, 255, 255, 0.6);
         }
         .timer-container {
           text-align: center;
-          padding: 20px;
+          padding: 30px 20px 20px 20px; /* Extra padding no topo para o drag handle */
           border-radius: 16px;
           background: #1e1e1e; /* Dark card background */
           box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
           border-left: 4px solid var(--phase-color, #6964ba);
           transition: all 0.3s ease;
           min-width: 240px;
+          position: relative;
         }
         .timer-container.phase-work {
           background: linear-gradient(135deg, #3e3a5e 0%, #1e1e1e 100%);
@@ -287,6 +333,7 @@ export class PictureInPictureService {
     <body>
       <button class="close-btn" onclick="closeWindow()" title="Fechar">&times;</button>
       <div class="timer-container" id="timerContainer">
+        <div class="drag-handle" id="dragHandle" title="Arrastar janela"></div>
         <div class="phase-indicator" id="phaseIndicator">TRABALHO</div>
         <div class="timer-display" id="timerDisplay">25:00</div>
         <div class="progress-bar">
@@ -395,6 +442,40 @@ export class PictureInPictureService {
           }
         }, 20000);
         
+        // Funcionalidade de drag para mover janela
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        
+        const dragHandle = document.getElementById('dragHandle');
+        
+        dragHandle.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          dragOffset.x = e.clientX;
+          dragOffset.y = e.clientY;
+          dragHandle.style.cursor = 'grabbing';
+          e.preventDefault();
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          
+          const deltaX = e.clientX - dragOffset.x;
+          const deltaY = e.clientY - dragOffset.y;
+          
+          // Mover janela
+          const newX = window.screenX + deltaX;
+          const newY = window.screenY + deltaY;
+          
+          window.moveTo(newX, newY);
+        });
+        
+        document.addEventListener('mouseup', () => {
+          if (isDragging) {
+            isDragging = false;
+            dragHandle.style.cursor = 'move';
+          }
+        });
+        
         // Prevent context menu
         document.addEventListener('contextmenu', e => e.preventDefault());
         
@@ -465,6 +546,70 @@ export class PictureInPictureService {
   // Método para definir callback de ações
   setActionCallback(callback: (action: string) => void): void {
     this.onActionFromPiP = callback;
+  }
+
+  // Métodos para controlar posição da janela
+  moveToMonitor(monitor: 'primary' | 'secondary' | number): void {
+    if (!this.pipWindow || this.pipWindow.closed) return;
+    
+    try {
+      let targetX: number;
+      let targetY = 100;
+      
+      if (monitor === 'primary') {
+        targetX = 100;
+      } else if (monitor === 'secondary') {
+        // Tentar mover para o segundo monitor (assumindo que está à direita)
+        targetX = screen.width + 100;
+      } else if (typeof monitor === 'number') {
+        targetX = monitor * screen.width + 100;
+      } else {
+        return;
+      }
+      
+      this.pipWindow.moveTo(targetX, targetY);
+      this.lastWindowPosition = { x: targetX, y: targetY };
+    } catch (error) {
+      console.error('Erro ao mover janela entre monitores:', error);
+    }
+  }
+
+  // Mover janela para posição específica
+  moveToPosition(x: number, y: number): void {
+    if (!this.pipWindow || this.pipWindow.closed) return;
+    
+    try {
+      this.pipWindow.moveTo(x, y);
+      this.lastWindowPosition = { x, y };
+    } catch (error) {
+      console.error('Erro ao mover janela:', error);
+    }
+  }
+
+  // Obter posição atual da janela
+  getCurrentPosition(): { x: number; y: number } | null {
+    if (!this.pipWindow || this.pipWindow.closed) return null;
+    
+    try {
+      return {
+        x: this.pipWindow.screenX || this.pipWindow.screenLeft || 0,
+        y: this.pipWindow.screenY || this.pipWindow.screenTop || 0
+      };
+    } catch (error) {
+      return this.lastWindowPosition;
+    }
+  }
+
+  // Verificar se a janela está em um monitor específico
+  isOnMonitor(monitorIndex: number = 0): boolean {
+    const position = this.getCurrentPosition();
+    if (!position) return false;
+    
+    const monitorWidth = screen.width;
+    const monitorStart = monitorIndex * monitorWidth;
+    const monitorEnd = monitorStart + monitorWidth;
+    
+    return position.x >= monitorStart && position.x < monitorEnd;
   }
 
 }

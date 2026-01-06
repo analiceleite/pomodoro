@@ -29,7 +29,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "frontend/public/tomato.png"
+      "icon": "frontend/public/clock.ico"
     }
   },
   "devDependencies": {

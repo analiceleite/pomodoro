@@ -1,0 +1,49 @@
+<mat-toolbar class="app-toolbar">
+  <div class="toolbar-content">
+    <!-- Logo and Brand -->
+    <div class="brand-section">
+      <div class="logo-container">
+        <mat-icon class="logo-icon">timer</mat-icon>
+      </div>
+      <span class="brand-name">
+        <span class="brand-primary">Pomodo</span>
+        <span class="brand-accent">App</span>
+      </span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav-section">
+      <button 
+        mat-button 
+        routerLink="/" 
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{exact: true}"
+        class="nav-button">
+        <mat-icon>schedule</mat-icon>
+        <span>Timer</span>
+      </button>
+      
+      <button 
+        mat-button 
+        routerLink="/stats" 
+        routerLinkActive="active"
+        class="nav-button">
+        <mat-icon>bar_chart</mat-icon>
+        <span>Estatísticas</span>
+      </button>
+    </nav>
+    
+    <!-- Actions -->
+    <div class="actions-section">
+      <button 
+        mat-icon-button 
+        class="action-btn pip-btn" 
+        (click)="togglePictureInPicture()" 
+        [matTooltip]="(isInPiP$ | async) ? 'Sair do Picture-in-Picture' : 'Picture-in-Picture'"
+        [class.active]="(isInPiP$ | async)">
+        <mat-icon>{{ (isInPiP$ | async) ? 'picture_in_picture_alt' : 'picture_in_picture' }}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+

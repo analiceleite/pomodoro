@@ -1,59 +1,34 @@
-# pomodoro
-Personal productivity app built with Angular, Node.js and Electron.
+# Pomodoro App
 
-## About
+Personal productivity app built with Angular, Node.js, Electron, and SQLite.
 
-This project was developed for personal use and learning purposes.
-It is a desktop Pomodoro application built with Angular, Node.js, Electron and SQLite,
-focused on productivity and offline usage.
+![Timer with picture-in-picture visualization activated](./pics/homescreen.png)
 
-## General vision
+---
 
-```yml
-Pomodoro App (Windows)
-│
-├── Frontend: Angular
-│   └── UI, timer, history, statistics
-│
-├── Backend: Node.js (Express or Fastify)
-│   └── Business logic
-│   └── Pomodoro control
-│   └── Persistence
-│
-├── Database: SQLite
-│   └── Local file (pomodoro.db)
-│
-└── Desktop container: Electron
-    └── Generates the executable (.exe)
-```
+## Features
 
-* No external server
-* Do not rely on internet
-* Only one executable
+- **Timer with Picture-in-Picture Mode**: Stay focused with a timer that can pop out into a resizable, always-on-top window.
+- **Dark Mode**: A sleek dark theme for better usability in low-light environments.
+- **Statistics Dashboard**: Track your productivity with detailed session statistics.
+- **Offline Support**: Fully functional without an internet connection.
+- **Cross-Platform**: Runs on Windows, macOS, and Linux.
+- **SQLite Integration**: Local database for storing session history.
+- **Electron Executable**: A single `.exe` file for easy distribution.
 
-## Stack
+---
 
-* Frontend: 
-    - Standalone Components
-    - RxJS 
-    - Material UI 
+## Current Version
 
-* Backend 
-    - Node.js
-    - Express
-    - SQLite
+**1.0.0 Beta**
 
-* Desktop 
-    - Electron 
-    - Electron Builder
+---
 
 ## How to Build and Run
 
 ### Build the Application
-To generate the executable for the Pomodoro app, follow these steps:
 
 1. **Install Dependencies**:
-   Make sure all dependencies are installed by running:
    ```bash
    npm install
    ```
@@ -76,6 +51,7 @@ To generate the executable for the Pomodoro app, follow these steps:
    The generated `.exe` file will be located in the `dist-electron/` folder.
 
 ### Run the Application
+
 - To test the app in development mode, use:
   ```bash
   npm start
@@ -83,7 +59,10 @@ To generate the executable for the Pomodoro app, follow these steps:
 
 - To run the generated executable, navigate to `dist-electron/` and double-click the `.exe` file.
 
-### Notes
+---
+
+## Notes
+
 - The app includes an embedded SQLite database (`pomodoro.db`) for local data storage.
 - Ensure the `backend` folder and database file are included during the build process.
 - Update the app version in `package.json` before generating a new build.

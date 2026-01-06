@@ -13,18 +13,18 @@ focused on productivity and offline usage.
 Pomodoro App (Windows)
 │
 ├── Frontend: Angular
-│   └── UI, timer, histórico, estatísticas
+│   └── UI, timer, history, statistics
 │
-├── Backend: Node.js (Express ou Fastify)
-│   └── Regras de negócio
-│   └── Controle do Pomodoro
-│   └── Persistência
+├── Backend: Node.js (Express or Fastify)
+│   └── Business logic
+│   └── Pomodoro control
+│   └── Persistence
 │
-├── Banco de dados: SQLite
-│   └── Arquivo local (pomodoro.db)
+├── Database: SQLite
+│   └── Local file (pomodoro.db)
 │
-└── Container desktop: Electron
-    └── Gera o executável (.exe)
+└── Desktop container: Electron
+    └── Generates the executable (.exe)
 ```
 
 * No external server
@@ -46,3 +46,44 @@ Pomodoro App (Windows)
 * Desktop 
     - Electron 
     - Electron Builder
+
+## How to Build and Run
+
+### Build the Application
+To generate the executable for the Pomodoro app, follow these steps:
+
+1. **Install Dependencies**:
+   Make sure all dependencies are installed by running:
+   ```bash
+   npm install
+   ```
+
+2. **Build the Frontend**:
+   Navigate to the `frontend` folder and build the Angular app:
+   ```bash
+   cd frontend
+   npm run build
+   ```
+
+3. **Generate the Executable**:
+   Return to the root directory and run the Electron Builder:
+   ```bash
+   cd ..
+   npm run build:electron
+   ```
+
+4. **Locate the Executable**:
+   The generated `.exe` file will be located in the `dist-electron/` folder.
+
+### Run the Application
+- To test the app in development mode, use:
+  ```bash
+  npm start
+  ```
+
+- To run the generated executable, navigate to `dist-electron/` and double-click the `.exe` file.
+
+### Notes
+- The app includes an embedded SQLite database (`pomodoro.db`) for local data storage.
+- Ensure the `backend` folder and database file are included during the build process.
+- Update the app version in `package.json` before generating a new build.

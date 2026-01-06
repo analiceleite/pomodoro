@@ -1,0 +1,39 @@
+{
+  "name": "pomodoro",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "Personal productivity app built with Angular, Node.js and Electron.",
+  "author": "Analice Leite",
+  "scripts": {
+    "build:frontend": "cd frontend && npm run build",
+    "build:electron": "electron-builder",
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "com.pomodoro.app",
+    "productName": "Pomodoro",
+    "directories": {
+      "output": "dist-electron"
+    },
+    "files": [
+      "frontend/dist/",
+      "backend/",
+      "main.js",
+      "node_modules/"
+    ],
+    "extraResources": [
+      {
+        "from": "backend/pomodoro.db",
+        "to": "pomodoro.db"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "frontend/public/tomato.png"
+    }
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}

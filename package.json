@@ -16,7 +16,7 @@
       "output": "dist-electron"
     },
     "files": [
-      "frontend/dist/",
+      "frontend/dist/frontend/",
       "backend/",
       "main.js",
       "node_modules/"

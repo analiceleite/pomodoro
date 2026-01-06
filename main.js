@@ -8,14 +8,16 @@ app.on('ready', () => {
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false
     }
   });
 
+  // Remove this line in production
+  mainWindow.webContents.openDevTools();
+
   // Carrega o frontend Angular
-  mainWindow.loadFile(path.join(__dirname, 'frontend/dist/index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'frontend/dist/frontend/browser/index.html'));
 });
 
 app.on('window-all-closed', () => {

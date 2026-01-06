@@ -10,6 +10,7 @@ import { TimerService } from '../../services/timer.service';
 import { PictureInPictureService } from '../../services/picture-in-picture.service';
 import { NotificationService } from '../../services/notification.service';
 import { PomodoroService } from '../../services/pomodoro.service';
+import { ElectronWindowService } from '../../services/electron-window.service';
 
 @Component({
   selector: 'app-timer',
@@ -33,6 +34,9 @@ export class Timer implements OnInit, OnDestroy {
   progress$;
   formattedTime$;
   isInPiP$;
+  availableDisplays$;
+  windowInfo$;
+  isElectronApp: boolean = false;
 
   // Circle progress properties for UI
   radius: number = 130;
@@ -49,16 +53,27 @@ export class Timer implements OnInit, OnDestroy {
     private timerService: TimerService,
     private pipService: PictureInPictureService,
     private notificationService: NotificationService,
-    private pomodoroService: PomodoroService
+    private pomodoroService: PomodoroService,
+    private electronWindowService: ElectronWindowService
   ) {
     this.timerState$ = this.timerService.state$;
     this.progress$ = this.timerService.progress$;
     this.formattedTime$ = this.timerService.formattedTime$;
     this.isInPiP$ = this.pipService.isInPictureInPicture$;
+    this.availableDisplays$ = this.electronWindowService.availableDisplays$;
+    this.windowInfo$ = this.electronWindowService.windowInfo$;
+    this.isElectronApp = this.electronWindowService.isRunningInElectron;
   }
 
   ngOnInit() {
     this.setupSubscriptions();
+    
+    // Inicializar monitoramento de janela se estiver no Electron
+    if (this.isElectronApp) {
+      this.electronWindowService.loadDisplayInfo();
+      this.electronWindowService.loadWindowInfo();
+      this.electronWindowService.startMonitoringDisplayChanges();
+    }
   }
 
   ngOnDestroy() {
@@ -183,5 +198,47 @@ export class Timer implements OnInit, OnDestroy {
   // Get stroke dash offset for circular progress
   getStrokeDashOffset(progress: number): number {
     return this.circumference - (progress / 100) * this.circumference;
+  }
+
+  // Métodos para controle da janela do Electron
+  async moveWindowToDisplay(displayIndex: number): Promise<void> {
+    await this.electronWindowService.moveToDisplay(displayIndex);
+  }
+
+  async moveWindowToNextDisplay(): Promise<void> {
+    await this.electronWindowService.moveToNextDisplay();
+  }
+
+  async toggleWindowMaximize(): Promise<void> {
+    await this.electronWindowService.toggleMaximize();
+  }
+
+  async moveWindowToMain(): Promise<void> {
+    await this.electronWindowService.moveToMainDisplay();
+  }
+
+  async moveWindowToSecondary(): Promise<void> {
+    await this.electronWindowService.moveToSecondaryDisplay();
+  }
+
+  isWindowOnDisplay(displayIndex: number): boolean {
+    return this.electronWindowService.isOnDisplay(displayIndex);
+  }
+
+  isWindowMaximized(): boolean {
+    return this.electronWindowService.isMaximized();
+  }
+
+  getDisplayCount(): number {
+    return this.electronWindowService.getDisplayCount();
+  }
+
+  // Métodos para controle de Picture-in-Picture
+  movePiPToPrimary(): void {
+    this.pipService.moveToMonitor('primary');
+  }
+
+  movePiPToSecondary(): void {
+    this.pipService.moveToMonitor('secondary');
   }
 }

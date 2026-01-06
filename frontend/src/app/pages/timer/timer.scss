@@ -327,6 +327,167 @@
     }
 }
 
+// Controles de Janela do Electron
+.window-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 20px;
+    background: rgba(105, 100, 186, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(105, 100, 186, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideInFromBottom 0.3s ease-out;
+    max-width: 400px;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-label {
+    font-size: 0.85rem;
+    color: #b0b0b0;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 80px;
+    margin-right: 8px;
+}
+
+.window-control-btn {
+    position: relative;
+    width: 44px !important;
+    height: 44px !important;
+    color: rgba(224, 224, 224, 0.8) !important;
+    background: rgba(105, 100, 186, 0.2) !important;
+    border-radius: 10px !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid rgba(105, 100, 186, 0.3) !important;
+    overflow: visible;
+
+    &:hover {
+        background: rgba(105, 100, 186, 0.4) !important;
+        color: #e0e0e0 !important;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(105, 100, 186, 0.3);
+    }
+
+    &.active {
+        background: rgba(105, 100, 186, 0.6) !important;
+        color: white !important;
+        border-color: rgba(105, 100, 186, 0.8) !important;
+        box-shadow: 0 0 16px rgba(105, 100, 186, 0.5);
+    }
+
+    &.special-btn {
+        background: rgba(33, 150, 243, 0.2) !important;
+        border-color: rgba(33, 150, 243, 0.3) !important;
+
+        &:hover {
+            background: rgba(33, 150, 243, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        &.active {
+            background: rgba(33, 150, 243, 0.6) !important;
+            border-color: rgba(33, 150, 243, 0.8) !important;
+            box-shadow: 0 0 16px rgba(33, 150, 243, 0.5);
+        }
+    }
+
+    mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover mat-icon {
+        transform: scale(1.1);
+    }
+
+    .monitor-number {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        background: rgba(105, 100, 186, 0.9);
+        color: white;
+        border-radius: 50%;
+        width: 16px;
+        height: 16px;
+        font-size: 10px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+}
+
+// Controles de Picture-in-Picture (mantidos para compatibilidade)
+.pip-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(76, 175, 80, 0.1);
+    border-radius: 20px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    backdrop-filter: blur(10px);
+    animation: slideInFromBottom 0.3s ease-out;
+}
+
+.pip-control-btn {
+    width: 40px !important;
+    height: 40px !important;
+    color: rgba(224, 224, 224, 0.8) !important;
+    background: rgba(76, 175, 80, 0.2) !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+
+    &:hover {
+        background: rgba(76, 175, 80, 0.4) !important;
+        color: #e0e0e0 !important;
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    &.active {
+        background: rgba(76, 175, 80, 0.6) !important;
+        color: white !important;
+        border-color: rgba(76, 175, 80, 0.8) !important;
+        box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
+    }
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+    }
+
+    &:hover mat-icon {
+        transform: scale(1.1);
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 @keyframes action-pulse {
 
     0%,
@@ -405,6 +566,61 @@
         .secondary-action-btn {
             width: 100%;
             max-width: 200px;
+        }
+    }
+
+    // Controles de janela responsivos
+    .window-controls {
+        max-width: 100%;
+        padding: 12px 16px;
+        
+        .control-group {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        .control-label {
+            min-width: auto;
+            margin-right: 0;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .window-control-btn {
+            width: 40px !important;
+            height: 40px !important;
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+
+            .monitor-number {
+                width: 14px;
+                height: 14px;
+                font-size: 9px;
+            }
+        }
+    }
+
+    .pip-controls {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+        gap: 12px;
+        padding: 12px 16px;
+
+        .pip-control-btn {
+            width: 36px !important;
+            height: 36px !important;
+
+            mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
         }
     }
 }

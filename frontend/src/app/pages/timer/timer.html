@@ -68,6 +68,62 @@
                 <mat-icon>refresh</mat-icon>
                 Resetar
             </button>
+
+            <!-- Controles de Janela - Só aparecem no Electron -->
+            <div class="window-controls" *ngIf="isElectronApp && getDisplayCount() > 1">
+                <div class="control-group">
+                    <span class="control-label">Mover Janela:</span>
+                    
+                    <!-- Botões para monitores específicos -->
+                    <button mat-icon-button 
+                            *ngFor="let display of (availableDisplays$ | async); let i = index"
+                            [matTooltip]="'Monitor ' + (i + 1) + (display.primary ? ' (Principal)' : '')" 
+                            class="window-control-btn" 
+                            [class.active]="isWindowOnDisplay(i)"
+                            (click)="moveWindowToDisplay(i)">
+                        <mat-icon>{{ display.primary ? 'desktop_windows' : 'monitor' }}</mat-icon>
+                        <span class="monitor-number">{{ i + 1 }}</span>
+                    </button>
+                </div>
+
+                <div class="control-group">
+                    <!-- Botão para próximo monitor -->
+                    <button mat-icon-button 
+                            matTooltip="Próximo Monitor (Ctrl+Shift+M)" 
+                            class="window-control-btn special-btn"
+                            (click)="moveWindowToNextDisplay()">
+                        <mat-icon>swap_horiz</mat-icon>
+                    </button>
+                    
+                    <!-- Botão para maximizar/restaurar -->
+                    <button mat-icon-button 
+                            [matTooltip]="isWindowMaximized() ? 'Restaurar (Ctrl+Shift+F)' : 'Maximizar (Ctrl+Shift+F)'" 
+                            class="window-control-btn special-btn"
+                            [class.active]="isWindowMaximized()"
+                            (click)="toggleWindowMaximize()">
+                        <mat-icon>{{ isWindowMaximized() ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controles PiP - Só aparecem quando PiP está ativo -->
+            <div class="pip-controls" *ngIf="(isInPiP$ | async)">
+                <span class="control-label">PiP:</span>
+                <!-- Botões para mover entre monitores -->
+                <button mat-icon-button 
+                        matTooltip="Mover PiP para Monitor Principal" 
+                        class="pip-control-btn" 
+                        (click)="movePiPToPrimary()">
+                    <mat-icon>monitor</mat-icon>
+                </button>
+                
+                <button mat-icon-button 
+                        matTooltip="Mover PiP para Monitor Secundário" 
+                        class="pip-control-btn"
+                        (click)="movePiPToSecondary()">
+                    <mat-icon>desktop_windows</mat-icon>
+                </button>
+            </div>
         </div>
     </div>
 </div>

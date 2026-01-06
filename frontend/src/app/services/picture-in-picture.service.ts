@@ -94,7 +94,7 @@ export class PictureInPictureService {
       'height=300',
       'top=100',
       'left=' + (screen.width - 320),
-      'resizable=yes',
+      'resizable=no',
       'scrollbars=no',
       'toolbar=no',
       'menubar=no',
@@ -103,7 +103,6 @@ export class PictureInPictureService {
       'status=no',
       'alwaysRaised=yes',
       'dependent=yes',
-      'z-lock=yes' // Ensures the window stays on top
     ].join(',');
 
     // Use about:blank para URL limpa

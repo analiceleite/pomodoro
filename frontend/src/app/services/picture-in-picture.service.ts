@@ -94,7 +94,7 @@ export class PictureInPictureService {
       'height=280',
       'top=100',
       'left=' + (screen.width - 320),
-      'resizable=no',
+      'resizable=yes',
       'scrollbars=no',
       'toolbar=no',
       'menubar=no',

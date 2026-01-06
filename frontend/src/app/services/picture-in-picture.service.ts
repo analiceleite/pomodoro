@@ -91,7 +91,7 @@ export class PictureInPictureService {
   private enterCleanPopupPiP(): void {
     const windowFeatures = [
       'width=300',
-      'height=280',
+      'height=300',
       'top=100',
       'left=' + (screen.width - 320),
       'resizable=yes',

@@ -15,7 +15,7 @@ app.on('ready', () => {
     });
 
     // Remove this line in production
-    mainWindow.webContents.openDevTools();
+    // mainWindow.webContents.openDevTools();
 
     // Carrega o frontend Angular
     mainWindow.loadFile(path.join(__dirname, 'frontend/dist/frontend/browser/index.html'));

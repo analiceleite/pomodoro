@@ -102,7 +102,8 @@ export class PictureInPictureService {
       'directories=no',
       'status=no',
       'alwaysRaised=yes',
-      'dependent=yes'
+      'dependent=yes',
+      'z-lock=yes' // Ensures the window stays on top
     ].join(',');
 
     // Use about:blank para URL limpa

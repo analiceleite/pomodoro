@@ -17,7 +17,6 @@ export interface NotificationConfig {
 })
 export class NotificationService {
     private permissionStatus$ = new BehaviorSubject<NotificationPermission>('default');
-    private isSupported$ = new BehaviorSubject<boolean>(this.checkNotificationSupport());
 
     constructor() {
         this.initializePermissionStatus();
@@ -168,21 +167,21 @@ export class NotificationService {
     private getNotificationConfig(phase: string): NotificationConfig {
         const configs: Record<string, NotificationConfig> = {
             work: {
-                title: '🍅 Hora de Trabalhar!',
-                body: 'Vamos focar por 25 minutos!',
-                icon: '/assets/work-icon.png',
+                title: '🦭 Hora de Trabalhar!',
+                body: 'Analice, foca por 25 minutos!',
+                icon: '/assets/icons/seal.png',
                 tag: 'pomodoro-work'
             },
             shortBreak: {
                 title: '☕ Pausa Curta',
                 body: 'Descanse por 5 minutos.',
-                icon: '/assets/break-icon.png',
+                icon: '/assets/icons/coffee-break.png',
                 tag: 'pomodoro-short-break'
             },
             longBreak: {
                 title: '🏖️ Pausa Longa',
-                body: 'Você merece! Descanse por 15 minutos.',
-                icon: '/assets/longbreak-icon.png',
+                body: 'Analice, você merece! Descanse por 15 minutos.',
+                icon: '/assets/icons/coffee-break.png',
                 tag: 'pomodoro-long-break'
             }
         };

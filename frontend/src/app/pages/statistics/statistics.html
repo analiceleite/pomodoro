@@ -1,6 +1,12 @@
 <div class="statistics-container">
+  <!-- Indicador de atualização em tempo real -->
+  <div class="update-indicator" *ngIf="isUpdating">
+    <mat-icon class="spin">refresh</mat-icon>
+    <span>Atualizando estatísticas...</span>
+  </div>
+
   <!-- Summary Cards -->
-  <div class="summary-grid">
+  <div class="summary-grid" [class.updating]="isUpdating">
     <mat-card class="summary-card">
       <mat-card-content>
         <div class="summary-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">

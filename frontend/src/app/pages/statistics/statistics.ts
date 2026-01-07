@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { Subject, takeUntil } from 'rxjs';
 import { PomodoroService } from '../../services/pomodoro.service';
 
 interface Stat {
@@ -17,24 +18,45 @@ interface Stat {
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })
-export class Statistics implements OnInit {
+export class Statistics implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  
   stats: Stat[] = [];
   totalHours: number = 0;
   todayHours: number = 0;
   averageHours: number = 0;
   streak: number = 0;
   maxHours: number = 8; // Meta diária em horas
+  isUpdating: boolean = false; // Flag para mostrar loading durante atualizações
 
   constructor(private pomodoroService: PomodoroService) {}
 
   ngOnInit() {
     this.loadStats();
+    this.setupRealTimeUpdates();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private setupRealTimeUpdates() {
+    // Escutar quando ciclos são completados para atualizar estatísticas em tempo real
+    this.pomodoroService.onCycleCompleted
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('Ciclo completado - atualizando estatísticas em tempo real');
+        this.loadStats();
+      });
   }
 
   loadStats() {
+    this.isUpdating = true;
     this.pomodoroService.getStats().subscribe(data => {
       this.stats = data;
       this.calculateSummary();
+      this.isUpdating = false;
     });
   }
 

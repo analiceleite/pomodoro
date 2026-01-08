@@ -2,8 +2,6 @@
 
 Personal productivity app built with Angular, Node.js, Electron, and SQLite.
 
-![Timer with picture-in-picture visualization activated](./pics/homescreen.png)
-
 ---
 
 ## Features
@@ -69,6 +67,25 @@ When running in Electron with multiple monitors detected:
 
 4. **Locate the Executable**:
    The generated `.exe` file will be located in the `dist-electron/` folder.
+
+### Useful build commands
+
+# Build completo
+npm run build
+
+# Apenas limpar artifacts
+npm run build:clean
+
+# Build individual
+npm run build:frontend
+npm run build:backend
+npm run build:electron
+
+# Instalar dependências em todos os módulos
+npm run install-all
+
+# Desenvolvimento
+npm run dev
 
 ### Run the Application
 

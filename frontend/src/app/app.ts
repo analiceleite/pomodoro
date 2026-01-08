@@ -6,8 +6,7 @@ import { Toolbar } from './components/toolbar/toolbar';
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, Toolbar],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  templateUrl: './app.html'
 })
 export class App {
   protected readonly title = signal('frontend');

@@ -43,6 +43,17 @@
         [class.active]="(isInPiP$ | async)">
         <mat-icon>{{ (isInPiP$ | async) ? 'picture_in_picture_alt' : 'picture_in_picture' }}</mat-icon>
       </button>
+      
+      <!-- Always on Top Button (só aparece no Electron) -->
+      <button 
+        mat-icon-button 
+        class="action-btn always-on-top-btn"
+        *ngIf="electronService.isElectronAvailable()"
+        (click)="toggleAlwaysOnTop()" 
+        [matTooltip]="(alwaysOnTopState$ | async) ? 'Desativar sempre no topo' : 'Manter sempre no topo'"
+        [class.active]="(alwaysOnTopState$ | async)">
+        <mat-icon>{{ (alwaysOnTopState$ | async) ? 'push_pin' : 'push_pin' }}</mat-icon>
+      </button>
     </div>
   </div>
 </mat-toolbar>

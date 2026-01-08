@@ -17,6 +17,7 @@ export interface NotificationConfig {
 })
 export class NotificationService {
     private permissionStatus$ = new BehaviorSubject<NotificationPermission>('default');
+    private lastNotifiedPhase: string = ''; // Track last notified phase globally
 
     constructor() {
         this.initializePermissionStatus();
@@ -66,11 +67,22 @@ export class NotificationService {
 
     showPhaseNotification(phase: string): Observable<boolean> {
         return new Observable(subscriber => {
+            // Check if this is the same phase as last notification (prevent duplicates)
+            if (phase === this.lastNotifiedPhase) {
+                console.log('📢 Skipping notification - already notified for phase:', phase);
+                subscriber.next(false);
+                subscriber.complete();
+                return;
+            }
+
             if (!this.canShowNotifications()) {
                 subscriber.next(false);
                 subscriber.complete();
                 return;
             }
+
+            // Update last notified phase
+            this.lastNotifiedPhase = phase;
 
             const config = this.getNotificationConfig(phase);
 
@@ -78,7 +90,7 @@ export class NotificationService {
                 const notification = new Notification(config.title, {
                     body: config.body,
                     icon: config.icon,
-                    badge: config.badge || '/assets/pomodoro-badge.png',
+                    badge: config.badge,
                     silent: config.silent || false,
                     requireInteraction: config.requireInteraction || false,
                     tag: config.tag || 'pomodoro-phase'
@@ -169,19 +181,19 @@ export class NotificationService {
             work: {
                 title: '🦭 Hora de Trabalhar!',
                 body: 'Analice, foca por 25 minutos!',
-                icon: '/assets/icons/seal.png',
+                icon: './assets/icons/seal.png',
                 tag: 'pomodoro-work'
             },
             shortBreak: {
                 title: '☕ Pausa Curta',
                 body: 'Descanse por 5 minutos.',
-                icon: '/assets/icons/coffee-break.png',
+                icon: './assets/icons/coffee-break.png',
                 tag: 'pomodoro-short-break'
             },
             longBreak: {
                 title: '🏖️ Pausa Longa',
                 body: 'Analice, você merece! Descanse por 15 minutos.',
-                icon: '/assets/icons/coffee-break.png',
+                icon: './assets/icons/coffee-break.png',
                 tag: 'pomodoro-long-break'
             }
         };
@@ -193,28 +205,20 @@ export class NotificationService {
         if (typeof window === 'undefined') return;
 
         try {
-            // Create audio context for better browser compatibility
             const audio = new Audio();
             audio.volume = 0.3;
             audio.preload = 'auto';
+            audio.src = './assets/sounds/notification.mp3';
+            audio.play();
 
-            // Try multiple sound sources
-            const sounds = [
-                '/assets/notification.mp3',
-                '/assets/notification.wav',
-                'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmgfBSuFz/LBESsFJXfH8N2QQAoUXrTp66hVFApGn+DyvmgfBSuFz/LB'  // Base64 beep sound
-            ];
-
-            audio.src = sounds[0];
-            audio.play().catch(() => {
-                // Try fallback beep sound
-                audio.src = sounds[2];
-                audio.play().catch(() => {
-                    // Silent fail - audio not available
-                });
-            });
         } catch (error) {
             // Audio not supported
         }
+    }
+
+    // Reset notification tracking (called when data is cleared)
+    resetNotificationState(): void {
+        this.lastNotifiedPhase = '';
+        console.log('🔄 Notification state reset');
     }
 }

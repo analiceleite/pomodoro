@@ -1,0 +1,68 @@
+{
+  "name": "pomodoro-electron",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "description": "Pomodoro Timer - Desktop Application",
+  "author": "Analice Leite",
+  "scripts": {
+    "start": "electron .",
+    "start:clean": "electron . --clear-cache",
+    "build": "electron-builder"
+  },
+  "build": {
+    "appId": "com.analice.pomodoro.app",
+    "productName": "Analice Pomodoro Timer",
+    "directories": {
+      "output": "../releases"
+    },
+    "files": [
+      "src/**/*",
+      "preload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "../frontend/dist/frontend/browser",
+        "to": "frontend/dist/frontend/browser",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../frontend/src/assets",
+        "to": "frontend/src/assets",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../backend",
+        "to": "backend",
+        "filter": [
+          "!node_modules",
+          "!src"
+        ]
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../frontend/public/clock.ico",
+      "requestedExecutionLevel": "asInvoker",
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "${productName}",
+      "uninstallDisplayName": "${productName}",
+      "installerIcon": "../frontend/public/clock.ico",
+      "uninstallerIcon": "../frontend/public/clock.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "tsx": "^4.21.0"
+  }
+}

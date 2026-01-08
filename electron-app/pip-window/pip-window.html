@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pomodoro Timer</title>
+    <meta charset="utf-8">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="pip-window.css">
+</head>
+
+<body>
+    <div class="timer-container" id="timerContainer">
+        <button class="close-btn" onclick="closePiP()" title="Fechar">×</button>
+
+        <div class="phase-indicator" id="phaseIndicator">TRABALHO</div>
+        <div class="timer-display" id="timerDisplay">25:00</div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="cycles-info" id="cyclesInfo">Ciclo 1</div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="toggleTimer()" id="toggleBtn" title="Play/Pause"><i
+                    class="material-icons">play_arrow</i></button>
+            <button class="control-btn" onclick="resetTimer()" title="Reset"><i
+                    class="material-icons">refresh</i></button>
+            <button class="control-btn" onclick="toggleTimerVisibility()" id="visibilityBtn" title="Ocultar timer"><i
+                    class="material-icons">visibility</i></button>
+        </div>
+    </div>
+
+    <script src="pip-window.js"></script>
+</body>
+
+</html>

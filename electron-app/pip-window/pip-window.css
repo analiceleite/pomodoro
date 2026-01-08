@@ -1,0 +1,170 @@
+ * {
+     margin: 0;
+     padding: 0;
+     box-sizing: border-box;
+ }
+
+ body {
+     font-family: 'Roboto Mono', monospace;
+     background: #121212;
+     color: #e0e0e0;
+     height: 100vh;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     user-select: none;
+     overflow: hidden;
+     position: relative;
+     margin: 0;
+     padding: 0;
+     -webkit-app-region: drag;
+     /* Permite arrastar a janela */
+ }
+
+ .timer-container {
+     text-align: center;
+     padding: 20px;
+     border-radius: 16px;
+     background: #1e1e1e;
+     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+     border-left: 4px solid var(--phase-color, #6964ba);
+     transition: all 0.3s ease;
+     min-width: 200px;
+     height: 200px;
+     position: relative;
+     -webkit-app-region: no-drag;
+     /* Desabilita drag nos controles */
+ }
+
+ .timer-container.phase-work {
+     background: linear-gradient(135deg, #3e3a5e 0%, #1e1e1e 100%);
+     border-left-color: #6964ba;
+     --phase-color: #6964ba;
+ }
+
+ .timer-container.phase-shortBreak {
+     background: linear-gradient(135deg, #2e4a3e 0%, #1e1e1e 100%);
+     border-left-color: #43a047;
+     --phase-color: #43a047;
+ }
+
+ .timer-container.phase-longBreak {
+     background: linear-gradient(135deg, #2e3e4a 0%, #1e1e1e 100%);
+     border-left-color: #1e88e5;
+     --phase-color: #1e88e5;
+ }
+
+ .close-btn {
+     position: absolute;
+     top: 8px;
+     right: 8px;
+     width: 20px;
+     height: 20px;
+     border: none;
+     background: rgba(255, 255, 255, 0.1);
+     color: #e0e0e0;
+     border-radius: 50%;
+     cursor: pointer;
+     font-size: 14px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.2s ease;
+     opacity: 0.7;
+     -webkit-app-region: no-drag;
+ }
+
+ .close-btn:hover {
+     background: rgba(231, 76, 60, 0.8);
+     color: white;
+     opacity: 1;
+     transform: scale(1.1);
+ }
+
+ .timer-display {
+     font-size: 2.5rem;
+     font-weight: 700;
+     color: var(--phase-color, #e0e0e0);
+     margin: 12px 0;
+     letter-spacing: -2px;
+ }
+
+ .timer-display.pulse {
+     animation: pulse 2s infinite;
+ }
+
+ .phase-indicator {
+     font-size: 0.8rem;
+     color: var(--phase-color, #b0b0b0);
+     font-weight: 500;
+     margin-bottom: 8px;
+     text-transform: uppercase;
+     letter-spacing: 1px;
+ }
+
+ .progress-bar {
+     height: 3px;
+     background: #333333;
+     border-radius: 2px;
+     overflow: hidden;
+     margin: 16px 0 8px 0;
+ }
+
+ .progress-fill {
+     height: 100%;
+     background: var(--phase-color, #6964ba);
+     border-radius: 2px;
+     transition: width 1s ease;
+     width: 0%;
+ }
+
+ .cycles-info {
+     font-size: 0.7rem;
+     color: #b0b0b0;
+     font-weight: 400;
+     margin-bottom: 12px;
+ }
+
+ .controls {
+     display: flex;
+     justify-content: center;
+     gap: 8px;
+     margin-top: 12px;
+     -webkit-app-region: no-drag;
+ }
+
+ .control-btn {
+     width: 32px;
+     height: 32px;
+     border: none;
+     border-radius: 50%;
+     background: var(--phase-color, #6964ba);
+     color: white;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.2s ease;
+     font-size: 16px;
+ }
+
+ .control-btn:hover {
+     transform: scale(1.1);
+     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+ }
+
+ .control-btn:active {
+     transform: scale(0.95);
+ }
+
+ @keyframes pulse {
+
+     0%,
+     100% {
+         opacity: 1;
+     }
+
+     50% {
+         opacity: 0.7;
+     }
+ }

@@ -14,16 +14,19 @@ export interface TimerState {
   providedIn: 'root'
 })
 export class TimerService {
-  private readonly WORK_DURATION = 25 * 60; // 25 minutes
-  private readonly SHORT_BREAK_DURATION = 5 * 60; // 5 minutes
-  private readonly LONG_BREAK_DURATION = 15 * 60; // 15 minutes
+  private workDuration = 25 * 60; // Default 25 minutes = 1500 seconds
+  private readonly SHORT_BREAK_DURATION = 5 * 60; // 5 minutes = 300 seconds  
+  private readonly LONG_BREAK_DURATION = 15 * 60; // 15 minutes = 900 seconds
+
+  // Available work duration options in minutes
+  private readonly WORK_DURATION_OPTIONS = [25, 45, 60]; // 25min, 30min, 1h
 
   private timerState$ = new BehaviorSubject<TimerState>({
-    timeLeft: this.WORK_DURATION,
+    timeLeft: this.workDuration,
     isRunning: false,
     currentPhase: 'work',
     cycles: 0,
-    totalTimeForPhase: this.WORK_DURATION
+    totalTimeForPhase: this.workDuration
   });
 
   private timerSubscription?: Subscription;
@@ -79,10 +82,24 @@ export class TimerService {
   reset(): void {
     this.pause();
     this.updateState({
-      timeLeft: this.WORK_DURATION,
+      timeLeft: this.workDuration,
       currentPhase: 'work',
       cycles: 0,
-      totalTimeForPhase: this.WORK_DURATION
+      totalTimeForPhase: this.workDuration
+    });
+  }
+
+  // Reset completo do timer (usado quando dados são limpos)
+  completeReset(): void {
+    this.pause();
+    this.timerSubscription?.unsubscribe();
+    this.onPhaseComplete$.next(''); // Limpar notificações pendentes
+    this.updateState({
+      timeLeft: this.workDuration,
+      currentPhase: 'work',
+      cycles: 0,
+      totalTimeForPhase: this.workDuration,
+      isRunning: false
     });
   }
 
@@ -115,7 +132,7 @@ export class TimerService {
       }
     } else {
       newPhase = 'work';
-      newTimeLeft = this.WORK_DURATION;
+      newTimeLeft = this.workDuration;
     }
 
     this.updateState({
@@ -169,5 +186,40 @@ export class TimerService {
       case 'longBreak': return 'Pausa Longa';
       default: return 'Trabalho';
     }
+  }
+
+  // Configuration methods for work duration
+  getAvailableWorkDurations(): number[] {
+    return [...this.WORK_DURATION_OPTIONS];
+  }
+
+  getCurrentWorkDurationInMinutes(): number {
+    return this.workDuration / 60;
+  }
+
+  setWorkDuration(minutes: number): void {
+    // Allow custom durations between 1 and 120 minutes
+    if (minutes >= 1 && minutes <= 120) {
+      this.workDuration = minutes * 60;
+      
+      // Reset timer if not running to apply new duration
+      if (!this.timerState$.value.isRunning) {
+        const currentState = this.timerState$.value;
+        if (currentState.currentPhase === 'work') {
+          this.updateState({
+            timeLeft: this.workDuration,
+            totalTimeForPhase: this.workDuration
+          });
+        }
+      }
+      
+      console.log(`🕐 Work duration set to ${minutes} minutes`);
+    } else {
+      console.warn(`Invalid work duration: ${minutes}. Must be between 1 and 120 minutes.`);
+    }
+  }
+
+  isPresetDuration(minutes: number): boolean {
+    return this.WORK_DURATION_OPTIONS.includes(minutes);
   }
 }

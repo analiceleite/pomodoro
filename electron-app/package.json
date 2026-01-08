@@ -17,7 +17,8 @@
     },
     "files": [
       "src/**/*",
-      "preload.js"
+      "preload.js",
+      "pip-window/**/*"
     ],
     "extraResources": [
       {

@@ -24,12 +24,7 @@ app.on('ready', () => {
         },
         show: false
     });
-
-    if (process.env.NODE_ENV !== 'production') {
-        mainWindow.webContents.openDevTools();
-        logInfo('DevTools ativado - modo desenvolvimento');
-    }
-
+    
     mainWindow.once('ready-to-show', () => {
         mainWindow.show();
     });

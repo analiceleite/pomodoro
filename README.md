@@ -29,7 +29,9 @@ Simply download `Analice Pomodoro Timer-Setup-1.0.0.exe` and run it to install t
 
 ## 🖼️ Screenshots
 
-*Coming soon...*
+![Timer - Tela Principal](./docs/home.png)
+
+![Estatísticas](./docs/statistics.png)
 
 ---
 

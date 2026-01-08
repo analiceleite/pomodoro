@@ -1,8 +1,19 @@
-const { ipcMain, BrowserWindow } = require('electron');
+const { ipcMain, BrowserWindow, app } = require('electron');
 const path = require('path');
 const { logInfo } = require('./logger');
 
 let pipWindow;
+
+// Helper function to get the correct base path for pip-window files
+function getPipWindowBasePath() {
+    const isDev = !app.isPackaged;
+    if (isDev) {
+        return path.join(__dirname, '../pip-window');
+    } else {
+        // In production, files are in app.asar
+        return path.join(__dirname, '../pip-window');
+    }
+}
 
 function setupIPCHandlers(mainWindow) {
     let isAlwaysOnTop = false;
@@ -37,6 +48,26 @@ function setupIPCHandlers(mainWindow) {
             return true;
         }
 
+        const pipBasePath = getPipWindowBasePath();
+        const preloadPath = path.join(pipBasePath, 'pip-preload.js');
+        const pipHtmlPath = path.join(pipBasePath, 'pip-window.html');
+
+        logInfo(`PiP base path: ${pipBasePath}`);
+        logInfo(`PiP preload path: ${preloadPath}`);
+        logInfo(`PiP HTML path: ${pipHtmlPath}`);
+
+        // Check if files exist
+        const fs = require('fs');
+        const htmlExists = fs.existsSync(pipHtmlPath);
+        const preloadExists = fs.existsSync(preloadPath);
+        logInfo(`PiP HTML exists: ${htmlExists}`);
+        logInfo(`PiP preload exists: ${preloadExists}`);
+
+        if (!htmlExists) {
+            console.error('❌ PiP HTML not found at:', pipHtmlPath);
+            return false;
+        }
+
         pipWindow = new BrowserWindow({
             width: 220,
             height: 220,
@@ -49,12 +80,11 @@ function setupIPCHandlers(mainWindow) {
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
-                preload: path.join(__dirname, '../pip-window/pip-preload.js')
+                preload: preloadPath
             },
             show: false
         });
 
-        const pipHtmlPath = path.join(__dirname, '../pip-window/pip-window.html');
         pipWindow.loadFile(pipHtmlPath);
 
         pipWindow.once('ready-to-show', () => {

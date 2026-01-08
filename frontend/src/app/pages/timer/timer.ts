@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, combineLatest, take } from 'rxjs';
 
 import { TimerService } from '../../services/timer.service';
@@ -19,14 +20,17 @@ import { PomodoroService } from '../../services/pomodoro.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   templateUrl: './timer.html',
   styleUrl: './timer.scss',
 })
 
-export class Timer implements OnInit, OnDestroy {
+export class Timer implements OnInit, OnDestroy, AfterViewInit {
   private destroy$ = new Subject<void>();
+
+  @ViewChild('timerContainer', { static: true }) timerContainer!: ElementRef;
 
   // Observables from services
   timerState$;
@@ -37,6 +41,12 @@ export class Timer implements OnInit, OnDestroy {
   // Circle progress properties for UI
   radius: number = 130;
   circumference: number = 2 * Math.PI * this.radius;
+
+  // Work duration configuration
+  availableWorkDurations: number[] = [];
+  currentWorkDuration: number = 25;
+  showCustomInput: boolean = false;
+  customDurationInput: number | null = null;
 
   // Make Math available in template
   Math = Math;
@@ -59,6 +69,15 @@ export class Timer implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.setupSubscriptions();
+    this.loadWorkDurationSettings();
+  }
+
+  ngAfterViewInit() {
+    // Definir dimensões da janela PiP baseadas no container do timer
+    if (this.timerContainer) {
+      const rect = this.timerContainer.nativeElement.getBoundingClientRect();
+      this.pipService.setPiPDimensions(rect.width, rect.height);
+    }
   }
 
   ngOnDestroy() {
@@ -75,9 +94,14 @@ export class Timer implements OnInit, OnDestroy {
 
         // Record cycle when work phase completes
         if (phase === 'shortBreak' || phase === 'longBreak') {
+          console.log(`🎯 Fase ${phase} completada - registrando ciclo no backend`);
           this.pomodoroService.recordCycle().subscribe({
-            next: (response) => console.log('Cycle recorded:', response),
-            error: (error) => console.error('Failed to record cycle:', error)
+            next: (response) => {
+              console.log('✅ Ciclo registrado com sucesso no backend:', response);
+            },
+            error: (error) => {
+              console.error('❌ Erro ao registrar ciclo no backend:', error);
+            }
           });
         }
 
@@ -92,6 +116,15 @@ export class Timer implements OnInit, OnDestroy {
             },
             error: (error) => console.error('Notification error:', error)
           });
+      });
+
+    // Subscribe to data clearing events to reset timer completely
+    this.pomodoroService.onDataCleared
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('🔄 Dados limpos - resetando timer completamente');
+        this.notificationService.resetNotificationState();
+        this.timerService.completeReset();
       });
 
     // Request notification permission on component init
@@ -184,4 +217,100 @@ export class Timer implements OnInit, OnDestroy {
   getStrokeDashOffset(progress: number): number {
     return this.circumference - (progress / 100) * this.circumference;
   }
+
+  // Work duration configuration methods
+  private loadWorkDurationSettings(): void {
+    this.availableWorkDurations = this.timerService.getAvailableWorkDurations();
+    this.currentWorkDuration = this.timerService.getCurrentWorkDurationInMinutes();
+  }
+
+  setWorkDuration(minutes: number): void {
+    this.timerState$.pipe(take(1)).subscribe(state => {
+      if (state.isRunning) {
+        alert('Não é possível alterar a duração durante um timer ativo. Pause ou resete o timer primeiro.');
+        return;
+      }
+      this.timerService.setWorkDuration(minutes);
+      this.currentWorkDuration = minutes;
+      this.showCustomInput = false;
+      this.customDurationInput = null;
+      console.log(`Work duration changed to ${minutes} minutes`);
+    });
+  }
+
+  toggleCustomInput(): void {
+    this.timerState$.pipe(take(1)).subscribe(state => {
+      if (state.isRunning) {
+        alert('Não é possível alterar a duração durante um timer ativo. Pause ou resete o timer primeiro.');
+        return;
+      }
+      this.showCustomInput = !this.showCustomInput;
+      if (this.showCustomInput) {
+        this.customDurationInput = this.currentWorkDuration;
+      }
+    });
+  }
+
+  applyCustomDuration(): void {
+    if (this.customDurationInput && this.customDurationInput >= 1 && this.customDurationInput <= 120) {
+      this.setWorkDuration(this.customDurationInput);
+    } else {
+      alert('Por favor, insira um valor entre 1 e 120 minutos.');
+    }
+  }
+
+  isPresetDuration(minutes: number): boolean {
+    return this.timerService.isPresetDuration(minutes);
+  }
+
+  getWorkDurationLabel(minutes: number): string {
+    return minutes === 60 ? '1h' : `${minutes}min`;
+  }
+
+  // Adicione estas funções ao seu componente TypeScript
+
+  /**
+   * Formata a duração em minutos para exibição legível
+   * Se > 60 minutos, mostra em horas
+   */
+  formatDurationLabel(minutes: number): string {
+    if (minutes >= 60) {
+      const hours = Math.floor(minutes / 60);
+      const remainingMinutes = minutes % 60;
+
+      if (remainingMinutes === 0) {
+        return `${hours}h`;
+      }
+      return `${hours}h ${remainingMinutes}min`;
+    }
+    return `${minutes} minutos`;
+  }
+
+  formatTotalTime(totalMinutes: number): string {
+    if (totalMinutes >= 60) {
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+
+      if (minutes === 0) {
+        return `${hours}h`;
+      }
+      return `${hours}h${minutes}m`;
+    }
+    return `${totalMinutes}min`;
+  }
+
+  formatTimerDisplay(seconds: number): string {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
+    if (hours > 0) {
+      // Formato: HH:MM:SS
+      return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    } else {
+      // Formato: MM:SS
+      return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+  }
+
 }

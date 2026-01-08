@@ -1,130 +1,226 @@
+// Variáveis para facilitar manutenção
+$primary-color: #6964ba;
+$accent-color: #f57c00;
+$bg-dark: #121212;
+$text-light: #e0e0e0;
+$text-muted: #b0b0b0;
+
+// Container Principal - Layout Otimizado
 .screensaver-container {
     position: fixed;
     top: 64px;
     left: 0;
     width: 100vw;
-    height: calc(100vh - 64px); // Subtract toolbar height
+    height: calc(100vh - 64px);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    font-family: 'Roboto', 'Inter', 'Segoe UI', sans-serif;
-    background: #121212; // Dark mode base background
+    overflow: auto;
+    font-family: 'Roboto', sans-serif;
+    background: $bg-dark;
+    color: $text-light;
 
-    // Phase-based backgrounds - Dark mode
-    &.phase-work {
-        background: linear-gradient(135deg, #3e3a5e 0%, #2a2845 50%, #1e1e1e 100%);
-    }
-
-    &.phase-shortBreak {
-        background: linear-gradient(135deg, #2e4a3e 0%, #243d32 50%, #1e1e1e 100%);
-    }
-
-    &.phase-longBreak {
-        background: linear-gradient(135deg, #2e3e4a 0%, #24323d 50%, #1e1e1e 100%);
-    }
-
-    // Animated background pattern - Dark mode
-    &::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background:
-            radial-gradient(circle at 25% 25%, rgba(105, 100, 186, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 75% 75%, rgba(105, 100, 186, 0.05) 0%, transparent 50%);
-        animation: float-bg 20s ease-in-out infinite;
-        pointer-events: none;
-    }
+    // Backgrounds por fase
+    &.phase-work { background: linear-gradient(135deg, #3e3a5e 0%, #1e1e1e 100%); }
+    &.phase-shortBreak { background: linear-gradient(135deg, #2e4a3e 0%, #1e1e1e 100%); }
+    &.phase-longBreak { background: linear-gradient(135deg, #2e3e4a 0%, #1e1e1e 100%); }
 }
 
-@keyframes float-bg {
-
-    0%,
-    100% {
-        transform: rotate(0deg) scale(1);
-    }
-
-    33% {
-        transform: rotate(120deg) scale(1.1);
-    }
-
-    66% {
-        transform: rotate(240deg) scale(0.9);
-    }
-}
-
-// Main Content Area
+// Conteúdo Principal - Compacto
 .main-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 48px;
-    gap: 64px;
+    padding: 20px;
+    gap: 24px;
+    min-height: 0;
 }
 
-// Phase Section
+// Indicador de Fase - Compacto
 .phase-section {
     text-align: center;
 
     .phase-indicator {
         display: flex;
-        flex-direction: column;
         align-items: center;
-        gap: 16px;
-        color: #e0e0e0; // Dark mode text color
+        justify-content: center;
+        gap: 12px;
 
         .phase-icon {
-            font-size: 4rem;
-            width: 4rem;
-            height: 4rem;
-            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
             animation: gentle-pulse 3s ease-in-out infinite;
         }
 
         .phase-title {
-            font-size: 2.5rem;
-            font-weight: 300;
-            font-family: 'Roboto', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 400;
             text-transform: uppercase;
-            letter-spacing: 4px;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-            color: #6964ba; // Primary color
+            letter-spacing: 2px;
+            color: $primary-color;
         }
     }
 }
 
 @keyframes gentle-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
 
-    0%,
-    100% {
-        transform: scale(1);
-        opacity: 1;
+// Duration Selector - Compacto
+.duration-selector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 1rem;
+    background: rgba(30, 30, 30, 0.6);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    width: 100%;
+    max-width: 600px;
+
+    .duration-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: $text-muted;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        mat-icon {
+            font-size: 1rem;
+            width: 16px;
+            height: 16px;
+        }
     }
 
-    50% {
-        transform: scale(1.05);
-        opacity: 0.8;
+    .duration-options {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+
+        button {
+            min-width: 60px;
+            height: 36px;
+            padding: 0 12px;
+            color: $text-light;
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+
+            &:hover:not(:disabled) {
+                background: rgba($primary-color, 0.2);
+                border-color: rgba($primary-color, 0.5);
+            }
+
+            &.active {
+                background: rgba($primary-color, 0.3);
+                border-color: $primary-color;
+                color: white;
+                box-shadow: 0 0 12px rgba($primary-color, 0.3);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            mat-icon {
+                font-size: 0.9rem;
+                width: 16px;
+                height: 16px;
+                margin-right: 2px;
+            }
+        }
+    }
+
+    .custom-duration-input {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        input {
+            width: 120px;
+            height: 36px;
+            padding: 0 12px;
+            background: rgba(20, 20, 20, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: $text-light;
+            font-size: 0.9rem;
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+
+            &:focus {
+                border-color: $primary-color;
+                box-shadow: 0 0 8px rgba($primary-color, 0.3);
+            }
+
+            &::placeholder {
+                color: $text-muted;
+                font-size: 0.75rem;
+            }
+
+            &::-webkit-outer-spin-button,
+            &::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            -moz-appearance: textfield;
+        }
+
+        button {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 8px;
+            
+            mat-icon {
+                margin-right: 2px;
+                font-size: 1rem;
+            }
+        }
+    }
+
+    .current-duration-info {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: rgba($primary-color, 0.15);
+        border-radius: 6px;
+        color: rgba($text-light, 0.9);
+        font-size: 0.75rem;
+
+        mat-icon {
+            font-size: 0.9rem;
+            width: 16px;
+            height: 16px;
+            color: $primary-color;
+        }
     }
 }
 
-// Timer Section
+// Timer - Compacto
 .timer-section {
     text-align: center;
-    max-width: 800px;
     width: 100%;
+    max-width: 600px;
 
     .timer-display {
-        font-size: clamp(8rem, 20vw, 16rem);
+        font-size: 12rem;
         font-weight: 100;
-        color: #e0e0e0; // Dark mode text color
-        text-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
-        font-family: 'Roboto', 'Roboto Mono', monospace;
-        letter-spacing: -8px;
-        margin-bottom: 48px;
+        letter-spacing: -4px;
+        margin: 3rem;
         line-height: 0.9;
 
         &.pulse {
@@ -134,493 +230,309 @@
 }
 
 @keyframes timer-pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 0.8;
-        transform: scale(0.98);
-    }
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
 }
 
-// Progress Bar
+// Barra de Progresso - Compacta
 .progress-bar-container {
     width: 100%;
-    max-width: 600px;
-    margin: 0 auto;
 
     .progress-bar {
         width: 100%;
-        height: 8px;
-        background: #333333; // Dark mode background
-        border-radius: 4px;
+        height: 0.5rem;
+        background: #333;
+        border-radius: 3px;
         overflow: hidden;
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
 
         .progress-fill {
             height: 100%;
-            background: #6964ba; // Primary color
-            border-radius: 4px;
+            background: $primary-color;
+            border-radius: 3px;
             transition: width 1s ease-out;
-            box-shadow: 0 0 20px rgba(105, 100, 186, 0.5);
-            position: relative;
-
-            &::after {
-                content: '';
-                position: absolute;
-                top: 0;
-                right: 0;
-                width: 100px;
-                height: 100%;
-                background: linear-gradient(90deg, transparent, rgba(105, 100, 186, 0.4), transparent);
-                animation: progress-shimmer 2s ease-in-out infinite;
-            }
+            box-shadow: 0 0 12px rgba($primary-color, 0.5);
         }
     }
 
     .progress-text {
-        color: #b0b0b0; // Dark mode text color
-        font-size: 1.1rem;
-        margin-top: 16px;
+        color: $text-muted;
+        font-size: 0.85rem;
+        margin-top: 8px;
         font-weight: 300;
-        letter-spacing: 1px;
     }
 }
 
-@keyframes progress-shimmer {
-    0% {
-        transform: translateX(-100px);
-    }
-
-    100% {
-        transform: translateX(600px);
-    }
-}
-
-// Bottom Section
+// Seção Inferior - Compacta
 .bottom-section {
-    padding: 48px;
-    background: rgba(0, 0, 0, 0.3); // Darker for dark mode
-    backdrop-filter: blur(20px);
+    padding: 3rem;
+    background: rgba(0, 0, 0, 0.3);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-// Stats Grid
+// Cards de Estatísticas - Layout Horizontal Compacto
 .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 24px;
-    margin-bottom: 48px;
-    max-width: 900px;
-    margin-left: auto;
-    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
 }
 
 .stat-card {
     display: flex;
     align-items: center;
-    gap: 20px;
-    padding: 24px;
-    background: rgba(30, 30, 30, 0.8); // Dark mode card background
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(30, 30, 30, 0.8);
     backdrop-filter: blur(10px);
-    border-radius: 16px;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
-    color: #e0e0e0; // Dark mode text color
+    min-width: 200px;
 
     &:hover {
         background: rgba(50, 50, 50, 0.8);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        border-color: rgba(105, 100, 186, 0.3);
+        transform: translateY(-2px);
+        border-color: rgba($primary-color, 0.3);
     }
 
     .stat-icon {
-        font-size: 2.5rem;
-        width: 2.5rem;
-        height: 2.5rem;
-        color: #6964ba; // Primary color for icons
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        color: $primary-color;
     }
 
     .stat-info {
         flex: 1;
 
         .stat-value {
-            font-size: 2rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            font-family: 'Roboto', sans-serif;
-            margin-bottom: 1rem;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-            color: #e0e0e0;
+            margin-bottom: 0.1rem;
+            line-height: 1;
         }
 
         .stat-label {
-            font-size: 0.9rem;
-            color: #b0b0b0; // Muted text for labels
+            font-size: 0.7rem;
+            color: $text-muted;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 400;
+            letter-spacing: 0.5px;
         }
     }
 }
 
-// Action Section
+// Botões de Ação - Compactos
 .action-section {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 24px;
+    gap: 16px;
     flex-wrap: wrap;
 
     .main-action-btn {
-        height: 64px;
-        padding: 0 32px;
-        font-size: 1.2rem;
+        height: 48px;
+        padding: 0 24px;
+        font-size: 1rem;
         font-weight: 500;
-        background: #6964ba; // Primary color
+        background: $primary-color;
         color: white;
-        box-shadow: 0 8px 24px rgba(105, 100, 186, 0.4);
+        box-shadow: 0 6px 16px rgba($primary-color, 0.4);
         transition: all 0.3s ease;
-        letter-spacing: 1px;
 
         &:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(105, 100, 186, 0.6);
-            background: #7a75c5;
+            box-shadow: 0 8px 20px rgba($primary-color, 0.6);
         }
 
         &.running {
-            background: #f57c00; // Accent color when running
-            animation: action-pulse 2s ease-in-out infinite;
+            background: $accent-color;
         }
 
         mat-icon {
-            margin-right: 8px;
-            font-size: 1.5rem;
-            width: 1.5rem;
-            height: 1.5rem;
+            margin-right: 6px;
+            font-size: 1.2rem;
         }
     }
 
     .secondary-action-btn {
-        height: 48px;
-        padding: 0 24px;
-        color: #e0e0e0; // Dark mode text
+        height: 40px;
+        padding: 0 20px;
+        color: $text-light;
         border-color: rgba(255, 255, 255, 0.1);
         background: rgba(255, 255, 255, 0.05);
         backdrop-filter: blur(10px);
         transition: all 0.3s ease;
+        font-size: 0.9rem;
 
         &:hover {
-            background: rgba(105, 100, 186, 0.2);
-            border-color: rgba(105, 100, 186, 0.4);
-            transform: translateY(-1px);
+            background: rgba($primary-color, 0.2);
+            border-color: rgba($primary-color, 0.4);
         }
 
         mat-icon {
-            margin-right: 8px;
+            margin-right: 6px;
+            font-size: 1rem;
         }
     }
 }
 
-// Controles de Janela do Electron
+// Controles de Janela - Compactos
 .window-controls {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding: 16px 20px;
-    background: rgba(105, 100, 186, 0.1);
-    border-radius: 20px;
-    border: 1px solid rgba(105, 100, 186, 0.3);
+    gap: 10px;
+    padding: 12px 16px;
+    background: rgba($primary-color, 0.1);
+    border-radius: 16px;
+    border: 1px solid rgba($primary-color, 0.3);
     backdrop-filter: blur(10px);
-    animation: slideInFromBottom 0.3s ease-out;
-    max-width: 400px;
+    max-width: 350px;
 }
 
 .control-group {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     flex-wrap: wrap;
 }
 
 .control-label {
-    font-size: 0.85rem;
-    color: #b0b0b0;
+    font-size: 0.75rem;
+    color: $text-muted;
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 80px;
-    margin-right: 8px;
+    min-width: 70px;
 }
 
 .window-control-btn {
     position: relative;
-    width: 44px !important;
-    height: 44px !important;
-    color: rgba(224, 224, 224, 0.8) !important;
-    background: rgba(105, 100, 186, 0.2) !important;
-    border-radius: 10px !important;
-    transition: all 0.3s ease !important;
-    border: 1px solid rgba(105, 100, 186, 0.3) !important;
-    overflow: visible;
-
-    &:hover {
-        background: rgba(105, 100, 186, 0.4) !important;
-        color: #e0e0e0 !important;
-        transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(105, 100, 186, 0.3);
-    }
-
-    &.active {
-        background: rgba(105, 100, 186, 0.6) !important;
-        color: white !important;
-        border-color: rgba(105, 100, 186, 0.8) !important;
-        box-shadow: 0 0 16px rgba(105, 100, 186, 0.5);
-    }
-
-    &.special-btn {
-        background: rgba(33, 150, 243, 0.2) !important;
-        border-color: rgba(33, 150, 243, 0.3) !important;
-
-        &:hover {
-            background: rgba(33, 150, 243, 0.4) !important;
-            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
-        }
-
-        &.active {
-            background: rgba(33, 150, 243, 0.6) !important;
-            border-color: rgba(33, 150, 243, 0.8) !important;
-            box-shadow: 0 0 16px rgba(33, 150, 243, 0.5);
-        }
-    }
-
-    mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
-        transition: transform 0.3s ease;
-    }
-
-    &:hover mat-icon {
-        transform: scale(1.1);
-    }
-
-    .monitor-number {
-        position: absolute;
-        bottom: -2px;
-        right: -2px;
-        background: rgba(105, 100, 186, 0.9);
-        color: white;
-        border-radius: 50%;
-        width: 16px;
-        height: 16px;
-        font-size: 10px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-    }
-}
-
-// Controles de Picture-in-Picture (mantidos para compatibilidade)
-.pip-controls {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(76, 175, 80, 0.1);
-    border-radius: 20px;
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    backdrop-filter: blur(10px);
-    animation: slideInFromBottom 0.3s ease-out;
-}
-
-.pip-control-btn {
-    width: 40px !important;
-    height: 40px !important;
-    color: rgba(224, 224, 224, 0.8) !important;
-    background: rgba(76, 175, 80, 0.2) !important;
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    color: rgba($text-light, 0.8) !important;
+    background: rgba($primary-color, 0.2) !important;
     border-radius: 8px !important;
     transition: all 0.3s ease !important;
-    border: 1px solid rgba(76, 175, 80, 0.3) !important;
+    border: 1px solid rgba($primary-color, 0.3) !important;
 
     &:hover {
-        background: rgba(76, 175, 80, 0.4) !important;
-        color: #e0e0e0 !important;
+        background: rgba($primary-color, 0.4) !important;
         transform: scale(1.05);
-        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
     }
 
     &.active {
-        background: rgba(76, 175, 80, 0.6) !important;
+        background: rgba($primary-color, 0.6) !important;
         color: white !important;
-        border-color: rgba(76, 175, 80, 0.8) !important;
-        box-shadow: 0 0 12px rgba(76, 175, 80, 0.5);
+        box-shadow: 0 0 12px rgba($primary-color, 0.5);
     }
 
     mat-icon {
         font-size: 20px;
         width: 20px;
         height: 20px;
-        transition: transform 0.3s ease;
     }
 
-    &:hover mat-icon {
-        transform: scale(1.1);
-    }
-}
-
-@keyframes slideInFromBottom {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes action-pulse {
-
-    0%,
-    100% {
-        box-shadow: 0 8px 24px rgba(245, 124, 0, 0.4);
-    }
-
-    50% {
-        box-shadow: 0 8px 32px rgba(245, 124, 0, 0.6);
+    .monitor-number {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        background: rgba($primary-color, 0.9);
+        color: white;
+        border-radius: 50%;
+        width: 14px;
+        height: 14px;
+        font-size: 9px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }
 
-// Responsive Design
+// Responsivo - Mobile First
 @media (max-width: 768px) {
-    .screensaver-container {
-        top: 64px;
-        height: calc(100vh - 64px);
-    }
-
     .main-content {
-        padding: 24px;
-        gap: 32px;
+        padding: 16px;
+        gap: 20px;
     }
 
     .phase-indicator {
-        .phase-icon {
-            font-size: 3rem !important;
-            width: 3rem !important;
-            height: 3rem !important;
-        }
+        .phase-icon { font-size: 1.5rem !important; width: 1.5rem !important; height: 1.5rem !important; }
+        .phase-title { font-size: 1.2rem !important; letter-spacing: 1.5px !important; }
+    }
 
-        .phase-title {
-            font-size: 1.8rem !important;
-            letter-spacing: 2px !important;
+    .duration-selector {
+        padding: 10px 16px;
+        
+        .duration-options button {
+            min-width: 50px;
+            height: 32px;
+            font-size: 0.75rem;
         }
     }
 
     .timer-display {
-        letter-spacing: -4px !important;
-        margin-bottom: 24px !important;
+        font-size: clamp(3rem, 12vw, 6rem) !important;
+        letter-spacing: -3px !important;
+        margin-bottom: 16px !important;
     }
 
     .bottom-section {
-        padding: 24px;
+        padding: 16px;
     }
 
     .stats-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-        margin-bottom: 32px;
+        flex-direction: row;
+        gap: 12px;
     }
 
     .stat-card {
-        padding: 16px;
+        flex-direction: column;
+        padding: 10px 12px;
+        min-width: 100px;
+        text-align: center;
 
-        .stat-icon {
-            font-size: 2rem !important;
-            width: 2rem !important;
-            height: 2rem !important;
-        }
-
-        .stat-value {
-            font-size: 1.5rem !important;
-        }
+        .stat-icon { font-size: 1.2rem !important; width: 1.2rem !important; height: 1.2rem !important; }
+        .stat-value { font-size: 1.1rem !important; }
+        .stat-label { font-size: 0.65rem !important; }
     }
 
     .action-section {
-        flex-direction: column;
-        gap: 16px;
+        gap: 12px;
 
         .main-action-btn {
-            width: 100%;
-            max-width: 280px;
+            height: 44px;
+            padding: 0 20px;
+            font-size: 0.95rem;
         }
 
         .secondary-action-btn {
-            width: 100%;
-            max-width: 200px;
+            height: 36px;
+            padding: 0 16px;
+            font-size: 0.85rem;
         }
     }
 
-    // Controles de janela responsivos
     .window-controls {
         max-width: 100%;
-        padding: 12px 16px;
-        
+        padding: 10px 12px;
+
         .control-group {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 8px;
+            justify-content: center;
         }
 
         .control-label {
             min-width: auto;
-            margin-right: 0;
-            margin-bottom: 4px;
             text-align: center;
+            width: 100%;
         }
 
         .window-control-btn {
-            width: 40px !important;
-            height: 40px !important;
-
-            mat-icon {
-                font-size: 20px;
-                width: 20px;
-                height: 20px;
-            }
-
-            .monitor-number {
-                width: 14px;
-                height: 14px;
-                font-size: 9px;
-            }
-        }
-    }
-
-    .pip-controls {
-        width: 100%;
-        max-width: 280px;
-        justify-content: center;
-        gap: 12px;
-        padding: 12px 16px;
-
-        .pip-control-btn {
             width: 36px !important;
             height: 36px !important;
-
-            mat-icon {
-                font-size: 18px;
-                width: 18px;
-                height: 18px;
-            }
+            min-width: 36px !important;
         }
     }
 }
@@ -631,13 +543,17 @@
         height: calc(100vh - 56px);
     }
 
-    .timer-display {
-        font-size: clamp(4rem, 15vw, 8rem) !important;
+    .phase-indicator {
+        .phase-icon { font-size: 1.2rem !important; width: 1.2rem !important; height: 1.2rem !important; }
+        .phase-title { font-size: 1rem !important; }
     }
 
-    .progress-bar-container {
-        .progress-text {
-            font-size: 0.9rem;
-        }
+    .stats-grid {
+        gap: 8px;
+    }
+
+    .stat-card {
+        min-width: 90px;
+        padding: 8px 10px;
     }
 }

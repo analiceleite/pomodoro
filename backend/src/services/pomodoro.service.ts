@@ -1,4 +1,4 @@
-import { addCompletedCycle, getDailyStats } from '../database/sqlite.js';
+import { addCompletedCycle, getDailyStats, clearAllCycles, exportAllCycles } from '../database/sqlite.js';
 
 export class PomodoroService {
   recordCompletedCycle() {
@@ -7,5 +7,13 @@ export class PomodoroService {
 
   getStatistics() {
     return getDailyStats();
+  }
+
+  clearAllData() {
+    clearAllCycles();
+  }
+
+  exportAllData() {
+    return exportAllCycles();
   }
 }

@@ -1,8 +1,23 @@
 // Add module declaration for better-sqlite3 if types are missing
 // @ts-ignore
 import Database from 'better-sqlite3';
+import path from 'path';
+import os from 'os';
 
-const db = new Database('./pomodoro.db');
+// Caminho persistente para o banco de dados usando diretório do usuário
+const userDataPath = process.env.POMODORO_DATA_PATH || path.join(os.homedir(), '.pomodoro');
+const dbPath = path.join(userDataPath, 'pomodoro.db');
+
+// Criar diretório se não existir
+import fs from 'fs';
+if (!fs.existsSync(userDataPath)) {
+  fs.mkdirSync(userDataPath, { recursive: true });
+}
+
+const db = new Database(dbPath);
+
+// Criar banco de dados no diretório persistente
+console.log(`Banco de dados armazenado em: ${dbPath}`);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS completed_cycles (
@@ -28,4 +43,27 @@ export function getDailyStats() {
     date: row.date,
     hours: (row.cycles * 25) / 60, // assuming 25 min per cycle
   }));
+}
+
+// Limpar todos os ciclos do banco
+export function clearAllCycles() {
+  const stmt = db.prepare('DELETE FROM completed_cycles');
+  const result = stmt.run();
+  console.log(`🗑️ ${result.changes} ciclos removidos do banco de dados`);
+  return result;
+}
+
+// Exportar todos os dados
+export function exportAllCycles() {
+  const stmt = db.prepare(`
+    SELECT id, timestamp, DATE(timestamp) as date
+    FROM completed_cycles
+    ORDER BY timestamp DESC
+  `);
+  const rows = stmt.all();
+  return {
+    exportDate: new Date().toISOString(),
+    totalCycles: rows.length,
+    cycles: rows
+  };
 }

@@ -10,5 +10,7 @@ router.get('/', (req, res) => {
 
 router.post('/cycle', (req, res) => controller.recordCycle(req, res));
 router.get('/stats', (req, res) => controller.getStats(req, res));
+router.delete('/clear', (req, res) => controller.clearAllData(req, res));
+router.get('/export', (req, res) => controller.exportData(req, res));
 
 export default router;

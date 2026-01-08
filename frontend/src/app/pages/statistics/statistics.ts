@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { Subject, takeUntil } from 'rxjs';
 import { PomodoroService } from '../../services/pomodoro.service';
 
@@ -14,7 +15,7 @@ interface Stat {
 @Component({
   selector: 'app-statistics',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatListModule, MatIconModule, MatButtonModule],
   templateUrl: './statistics.html',
   styleUrl: './statistics.scss',
 })
@@ -42,21 +43,32 @@ export class Statistics implements OnInit, OnDestroy {
   }
 
   private setupRealTimeUpdates() {
+    console.log('📊 Configurando escuta para atualizações em tempo real das estatísticas');
+    
     // Escutar quando ciclos são completados para atualizar estatísticas em tempo real
     this.pomodoroService.onCycleCompleted
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
-        console.log('Ciclo completado - atualizando estatísticas em tempo real');
+        console.log('🔄 Evento de ciclo completado recebido - atualizando estatísticas em tempo real');
         this.loadStats();
       });
   }
 
   loadStats() {
     this.isUpdating = true;
-    this.pomodoroService.getStats().subscribe(data => {
-      this.stats = data;
-      this.calculateSummary();
-      this.isUpdating = false;
+    console.log('📈 Carregando estatísticas...');
+    
+    this.pomodoroService.getStats().subscribe({
+      next: (data) => {
+        console.log('📊 Estatísticas carregadas:', data);
+        this.stats = data;
+        this.calculateSummary();
+        this.isUpdating = false;
+      },
+      error: (error) => {
+        console.error('❌ Erro ao carregar estatísticas:', error);
+        this.isUpdating = false;
+      }
     });
   }
 
@@ -151,8 +163,9 @@ export class Statistics implements OnInit, OnDestroy {
   }
 
   // Calcular porcentagem de progresso
-  getProgressPercentage(hours: number): number {
-    return Math.min((hours / this.maxHours) * 100, 100);
+  getProgressPercentage(hours: number): string {
+    const percentage = Math.min((hours / this.maxHours) * 100, 100);
+    return Math.round(percentage) + '%';
   }
 
   // Obter cor baseada nas horas
@@ -180,5 +193,55 @@ export class Statistics implements OnInit, OnDestroy {
   // Calcular número de ciclos (25min por ciclo)
   calculateCycles(hours: number): number {
     return Math.round((hours * 60) / 25);
+  }
+
+  // Exportar dados
+  exportData() {
+    this.pomodoroService.exportData().subscribe({
+      next: (data) => {
+        console.log('📤 Dados exportados:', data);
+        this.downloadJson(data, 'pomodoro-data-export.json');
+      },
+      error: (error) => {
+        console.error('❌ Erro ao exportar dados:', error);
+        alert('Erro ao exportar dados. Verifique o console.');
+      }
+    });
+  }
+
+  // Confirmar limpeza de dados
+  confirmClearData() {
+    const confirmed = confirm('⚠️ Tem certeza que deseja limpar TODOS os dados? Esta ação não pode ser desfeita!');
+    if (confirmed) {
+      this.clearData();
+    }
+  }
+
+  // Limpar todos os dados
+  clearData() {
+    this.pomodoroService.clearAllData().subscribe({
+      next: (response) => {
+        console.log('🗑️ Dados limpos:', response);
+        alert('✅ Todos os dados foram limpos com sucesso!');
+        this.loadStats(); // Recarregar estatísticas
+      },
+      error: (error) => {
+        console.error('❌ Erro ao limpar dados:', error);
+        alert('Erro ao limpar dados. Verifique o console.');
+      }
+    });
+  }
+
+  // Download de arquivo JSON
+  private downloadJson(data: any, filename: string) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
   }
 }

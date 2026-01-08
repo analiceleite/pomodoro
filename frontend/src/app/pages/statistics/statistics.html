@@ -5,6 +5,18 @@
     <span>Atualizando estatísticas...</span>
   </div>
 
+  <!-- Botões de Gerenciamento -->
+  <div class="management-buttons">
+    <button mat-raised-button color="accent" (click)="exportData()" [disabled]="isUpdating">
+      <mat-icon>download</mat-icon>
+      Exportar Dados
+    </button>
+    <button mat-raised-button color="warn" (click)="confirmClearData()" [disabled]="isUpdating">
+      <mat-icon>delete_sweep</mat-icon>
+      Limpar Dados
+    </button>
+  </div>
+
   <!-- Summary Cards -->
   <div class="summary-grid" [class.updating]="isUpdating">
     <mat-card class="summary-card">
@@ -98,7 +110,7 @@
                 <mat-icon>check_circle</mat-icon>
                 {{ calculateCycles(stat.hours) }} ciclos
               </span>
-              <span class="percentage">{{ getProgressPercentage(stat.hours) }}%</span>
+              <span class="percentage">{{ getProgressPercentage(stat.hours) }}</span>
             </div>
           </div>
         </div>

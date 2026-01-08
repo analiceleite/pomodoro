@@ -51,6 +51,50 @@
   to { transform: rotate(360deg); }
 }
 
+// Botões de gerenciamento
+.management-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 12px !important;
+    font-weight: 500;
+    text-transform: none;
+    min-width: 140px;
+    
+    &[color="accent"] {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      
+      &:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-1px);
+      }
+    }
+    
+    &[color="warn"] {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      
+      &:hover {
+        background: linear-gradient(135deg, #e881f9 0%, #f3455a 100%);
+        transform: translateY(-1px);
+      }
+    }
+    
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+  }
+}
+
 .summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -378,23 +422,7 @@
   background: #1e1e1e !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
   border: 1px solid rgba(105, 100, 186, 0.1);
-
-  mat-card_header {
-    padding: 24px 24px 0 24px;
-
-    mat-card-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #e0e0e0;
-
-      mat-icon {
-        color: #6964ba;
-      }
-    }
-  }
+  color: white;
 
   mat-card-content {
     padding: 24px !important;

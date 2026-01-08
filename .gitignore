@@ -13,13 +13,10 @@ yarn-error.log*
 
 # Build outputs
 dist/
-dist-electron/.icon-ico
-dist-electron/win-unpacked
-dist-electron/builder-debug.yml
-dist-electron/builder-effective-config.yaml
-dist-electron/latest.yml
-dist-electron/Pomodoro Setup 1.0.0.exe.blockmap
-
+releases/win-unpacked
+releases/builder-debug.yml
+releases/builder-effective-config.yaml
+releases/Pomodoro Setup 1.0.0.exe.blockmap
 
 # IDE settings
 .vscode/

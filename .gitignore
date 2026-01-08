@@ -13,10 +13,22 @@ yarn-error.log*
 
 # Build outputs
 dist/
-releases/win-unpacked
+
+# Releases - keep only installers and main executables
 releases/builder-debug.yml
 releases/builder-effective-config.yaml
-releases/Pomodoro Setup 1.0.0.exe.blockmap
+releases/*.blockmap
+
+# win-unpacked - ignore all support files, keep only .exe
+releases/win-unpacked/*.pak
+releases/win-unpacked/*.dll
+releases/win-unpacked/*.dat
+releases/win-unpacked/*.bin
+releases/win-unpacked/*.txt
+releases/win-unpacked/*.html
+releases/win-unpacked/*.json
+releases/win-unpacked/locales/
+releases/win-unpacked/resources/
 
 # IDE settings
 .vscode/

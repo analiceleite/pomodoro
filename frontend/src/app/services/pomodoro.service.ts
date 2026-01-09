@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'  // Garantir que seja singleton global
@@ -25,8 +25,9 @@ export class PomodoroService {
     return this.dataCleared$.asObservable();
   }
 
-  recordCycle(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/cycle`, {}).pipe(
+  recordCycle(durationMinutes?: number): Observable<any> {
+    const payload = durationMinutes ? { durationMinutes } : {};
+    return this.http.post(`${this.apiUrl}/cycle`, payload).pipe(
       tap({
         next: (response) => {
           // Notificar que um ciclo foi completado após sucesso
@@ -36,6 +37,16 @@ export class PomodoroService {
         error: (error) => {
           console.error('❌ Erro ao registrar ciclo:', error);
         }
+      })
+    );
+  }
+
+  getTodayStats(): Observable<any> {
+    return this.http.get<any[]>(`${this.apiUrl}/stats`).pipe(
+      map((stats: any[]) => {
+        const today = new Date().toISOString().split('T')[0];
+        const todayData = stats.find(stat => stat.date === today);
+        return todayData || { cycles: 0, totalMinutes: 0, hours: 0 };
       })
     );
   }

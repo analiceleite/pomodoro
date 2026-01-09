@@ -79,7 +79,7 @@
       <div class="stat-card">
         <mat-icon class="stat-icon">check_circle</mat-icon>
         <div class="stat-info">
-          <div class="stat-value">{{ (timerState$ | async)?.cycles || 0 }}</div>
+          <div class="stat-value">{{ todayStats.cycles || 0 }}</div>
           <div class="stat-label">Ciclos</div>
         </div>
       </div>
@@ -87,7 +87,7 @@
       <div class="stat-card">
         <mat-icon class="stat-icon">schedule</mat-icon>
         <div class="stat-info">
-          <div class="stat-value">{{ formatTotalTime(((timerState$ | async)?.cycles || 0) * currentWorkDuration) }}</div>
+          <div class="stat-value">{{ formatTotalTime(todayStats.totalMinutes || 0) }}</div>
           <div class="stat-label">Foco</div>
         </div>
       </div>
@@ -107,6 +107,17 @@
         class="main-action-btn" [class.running]="(timerState$ | async)?.isRunning" extended>
         <mat-icon>{{ (timerState$ | async)?.isRunning ? 'pause' : 'play_arrow' }}</mat-icon>
         {{ (timerState$ | async)?.isRunning ? 'Pausar' : 'Iniciar' }}
+      </button>
+
+      <!-- Skip Break Button - Only visible during break phases -->
+      <button 
+        mat-stroked-button 
+        color="accent" 
+        (click)="skipBreak()" 
+        class="skip-break-btn"
+        *ngIf="(timerState$ | async)?.currentPhase === 'shortBreak' || (timerState$ | async)?.currentPhase === 'longBreak'">
+        <mat-icon>skip_next</mat-icon>
+        Pular Pausa
       </button>
 
       <button mat-stroked-button color="warn" (click)="reset()" class="secondary-action-btn">

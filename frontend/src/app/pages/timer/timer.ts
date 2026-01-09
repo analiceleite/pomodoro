@@ -48,6 +48,9 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   showCustomInput: boolean = false;
   customDurationInput: number | null = null;
 
+  // Today's stats
+  todayStats: any = { cycles: 0, totalMinutes: 0, hours: 0 };
+
   // Make Math available in template
   Math = Math;
 
@@ -70,6 +73,7 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.setupSubscriptions();
     this.loadWorkDurationSettings();
+    this.loadTodayStats();
   }
 
   ngAfterViewInit() {
@@ -95,9 +99,11 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
         // Record cycle when work phase completes
         if (phase === 'shortBreak' || phase === 'longBreak') {
           console.log(`🎯 Fase ${phase} completada - registrando ciclo no backend`);
-          this.pomodoroService.recordCycle().subscribe({
+          const durationMinutes = this.timerService.getCurrentWorkDurationInMinutes();
+          this.pomodoroService.recordCycle(durationMinutes).subscribe({
             next: (response) => {
               console.log('✅ Ciclo registrado com sucesso no backend:', response);
+              this.loadTodayStats();
             },
             error: (error) => {
               console.error('❌ Erro ao registrar ciclo no backend:', error);
@@ -125,6 +131,7 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
         console.log('🔄 Dados limpos - resetando timer completamente');
         this.notificationService.resetNotificationState();
         this.timerService.completeReset();
+        this.loadTodayStats(); 
       });
 
     // Request notification permission on component init
@@ -200,6 +207,10 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
     this.timerService.reset();
   }
 
+  skipBreak(): void {
+    this.timerService.skipBreak();
+  }
+
   // Helper methods for template
   getPhaseColor(phase: string): string {
     return this.timerService.getPhaseColor(phase);
@@ -216,12 +227,6 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   // Get stroke dash offset for circular progress
   getStrokeDashOffset(progress: number): number {
     return this.circumference - (progress / 100) * this.circumference;
-  }
-
-  // Work duration configuration methods
-  private loadWorkDurationSettings(): void {
-    this.availableWorkDurations = this.timerService.getAvailableWorkDurations();
-    this.currentWorkDuration = this.timerService.getCurrentWorkDurationInMinutes();
   }
 
   setWorkDuration(minutes: number): void {
@@ -287,16 +292,27 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   }
 
   formatTotalTime(totalMinutes: number): string {
-    if (totalMinutes >= 60) {
-      const hours = Math.floor(totalMinutes / 60);
-      const minutes = totalMinutes % 60;
+    const roundedMinutes = Math.round(totalMinutes * 100) / 100;
+    
+    if (roundedMinutes >= 60) {
+      const hours = Math.floor(roundedMinutes / 60);
+      const minutes = Math.round(roundedMinutes % 60);
 
       if (minutes === 0) {
         return `${hours}h`;
       }
       return `${hours}h${minutes}m`;
     }
-    return `${totalMinutes}min`;
+    
+    // Para valores menores que 1 minuto, mostrar em segundos
+    if (roundedMinutes < 1) {
+      const seconds = Math.round(roundedMinutes * 60);
+      return `${seconds}s`;
+    }
+    
+    // Mostrar apenas parte inteira dos minutos
+    const wholeMinutes = Math.round(roundedMinutes);
+    return `${wholeMinutes}min`;
   }
 
   formatTimerDisplay(seconds: number): string {
@@ -311,6 +327,23 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
       // Formato: MM:SS
       return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
+  }
+
+  private loadTodayStats(): void {
+    this.pomodoroService.getTodayStats().subscribe({
+      next: (stats) => {
+        this.todayStats = stats;
+        console.log('📈 Estatísticas de hoje carregadas:', stats);
+      },
+      error: (error) => {
+        console.error('❌ Erro ao carregar estatísticas:', error);
+      }
+    });
+  }
+
+  private loadWorkDurationSettings(): void {
+    this.availableWorkDurations = this.timerService.getAvailableWorkDurations();
+    this.currentWorkDuration = this.timerService.getCurrentWorkDurationInMinutes();
   }
 
 }

@@ -83,8 +83,6 @@ export class TimerService {
     this.pause();
     this.updateState({
       timeLeft: this.workDuration,
-      currentPhase: 'work',
-      cycles: 0,
       totalTimeForPhase: this.workDuration
     });
   }
@@ -93,7 +91,7 @@ export class TimerService {
   completeReset(): void {
     this.pause();
     this.timerSubscription?.unsubscribe();
-    this.onPhaseComplete$.next(''); // Limpar notificações pendentes
+    this.onPhaseComplete$.next(''); 
     this.updateState({
       timeLeft: this.workDuration,
       currentPhase: 'work',
@@ -221,5 +219,24 @@ export class TimerService {
 
   isPresetDuration(minutes: number): boolean {
     return this.WORK_DURATION_OPTIONS.includes(minutes);
+  }
+
+  // Skip break and go directly to work phase
+  skipBreak(): void {
+    const currentState = this.timerState$.value;
+    
+    // Only allow skipping during break phases
+    if (currentState.currentPhase === 'shortBreak' || currentState.currentPhase === 'longBreak') {
+      this.pause();
+      
+      this.updateState({
+        currentPhase: 'work',
+        timeLeft: this.workDuration,
+        totalTimeForPhase: this.workDuration,
+        isRunning: false
+      });
+      
+      console.log(`🚀 Break skipped, returning to work phase`);
+    }
   }
 }

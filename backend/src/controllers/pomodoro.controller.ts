@@ -11,8 +11,9 @@ export class PomodoroController {
   recordCycle(req: Request, res: Response) {
     try {
       console.log('📥 Recebendo requisição para registrar ciclo');
-      pomodoroService.recordCompletedCycle();
-      console.log('✅ Ciclo registrado no banco de dados com sucesso');
+      const { durationMinutes } = req.body;
+      pomodoroService.recordCompletedCycle(durationMinutes);
+      console.log(`✅ Ciclo registrado no banco de dados com duração: ${durationMinutes || 25} minutos`);
       res.status(201).json({ message: 'Cycle recorded successfully', timestamp: new Date().toISOString() });
     } catch (error) {
       console.error('❌ Erro ao registrar ciclo:', error);

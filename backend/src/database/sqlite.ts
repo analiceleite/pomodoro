@@ -22,18 +22,33 @@ console.log(`Banco de dados armazenado em: ${dbPath}`);
 db.exec(`
   CREATE TABLE IF NOT EXISTS completed_cycles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    duration_minutes INTEGER DEFAULT 25
   );
 `);
 
-export function addCompletedCycle() {
-  const stmt = db.prepare('INSERT INTO completed_cycles DEFAULT VALUES');
-  stmt.run();
+// Adicionar coluna duration_minutes se ela não existir (para bancos existentes)
+try {
+  const tableInfo = db.prepare("PRAGMA table_info(completed_cycles)").all();
+  const hasDurationColumn = tableInfo.some((col: any) => col.name === 'duration_minutes');
+  
+  if (!hasDurationColumn) {
+    console.log('🔄 Adicionando coluna duration_minutes à tabela existente...');
+    db.exec(`ALTER TABLE completed_cycles ADD COLUMN duration_minutes INTEGER DEFAULT 25`);
+    console.log('✅ Coluna duration_minutes adicionada com sucesso');
+  }
+} catch (error) {
+  console.error('❌ Erro na migração da tabela:', error);
+}
+
+export function addCompletedCycle(durationMinutes: number = 25) {
+  const stmt = db.prepare('INSERT INTO completed_cycles (duration_minutes) VALUES (?)');
+  stmt.run(durationMinutes);
 }
 
 export function getDailyStats() {
   const stmt = db.prepare(`
-    SELECT DATE(timestamp) as date, COUNT(*) as cycles
+    SELECT DATE(timestamp) as date, COUNT(*) as cycles, SUM(duration_minutes) as total_minutes
     FROM completed_cycles
     GROUP BY DATE(timestamp)
     ORDER BY date DESC
@@ -41,7 +56,9 @@ export function getDailyStats() {
   const rows = stmt.all();
   return rows.map((row: any) => ({
     date: row.date,
-    hours: (row.cycles * 25) / 60, // assuming 25 min per cycle
+    cycles: row.cycles,
+    totalMinutes: row.total_minutes,
+    hours: row.total_minutes / 60
   }));
 }
 
@@ -56,14 +73,16 @@ export function clearAllCycles() {
 // Exportar todos os dados
 export function exportAllCycles() {
   const stmt = db.prepare(`
-    SELECT id, timestamp, DATE(timestamp) as date
+    SELECT id, timestamp, duration_minutes, DATE(timestamp) as date
     FROM completed_cycles
     ORDER BY timestamp DESC
   `);
   const rows = stmt.all();
+  const totalMinutes = rows.reduce((sum: number, row: any) => sum + row.duration_minutes, 0);
   return {
     exportDate: new Date().toISOString(),
     totalCycles: rows.length,
+    totalMinutes: totalMinutes,
     cycles: rows
   };
 }

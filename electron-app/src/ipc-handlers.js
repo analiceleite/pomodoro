@@ -127,6 +127,26 @@ function setupIPCHandlers(mainWindow) {
         }
         return false;
     });
+
+    // Show a native notification from main process (used by renderer via preload)
+    ipcMain.handle('show-notification', (event, payload) => {
+        try {
+            const { Notification } = require('electron');
+            const notif = new Notification({
+                title: payload.title || 'Pomodoro',
+                body: payload.body || '',
+                silent: payload.silent || false,
+                icon: payload.icon ? path.join(__dirname, '..', payload.icon) : undefined
+            });
+
+            notif.show();
+            logInfo('Native notification shown from main process', payload);
+            return true;
+        } catch (err) {
+            console.error('❌ Failed to show native notification:', err);
+            return false;
+        }
+    });
 }
 
 module.exports = { setupIPCHandlers };

@@ -4,6 +4,8 @@ import { map, takeWhile, tap, filter } from 'rxjs/operators';
 import { TimerConfigService } from './timer-config.service';
 import { TimerUiService } from './timer-ui.service';
 import { TimerState, createInitialState } from './timer-state';
+import { NotificationService } from '../notification.service';
+import { PomodoroService } from '../pomodoro.service';
 
 @Injectable({ providedIn: 'root' })
 export class TimerEngineService {
@@ -11,7 +13,12 @@ export class TimerEngineService {
   private timerSubscription?: Subscription;
   private onPhaseComplete$ = new Subject<string>();
 
-  constructor(private config: TimerConfigService, private ui: TimerUiService) {
+  constructor(
+    private config: TimerConfigService,
+    private ui: TimerUiService,
+    private notificationService: NotificationService,
+    private pomodoroService: PomodoroService
+  ) {
     this.timerState$ = new BehaviorSubject<TimerState>(createInitialState(this.config.getWorkDurationSeconds()));
   }
 
@@ -128,7 +135,28 @@ export class TimerEngineService {
     });
 
     if (current.userStarted) {
-      setTimeout(() => this.onPhaseComplete$.next(newPhase), 100);
+      setTimeout(() => {
+        this.onPhaseComplete$.next(newPhase);
+
+        // Trigger notification regardless of component visibility
+        this.notificationService.showPhaseNotification(newPhase).subscribe({
+          next: (shown) => {
+            if (!shown) {
+              console.log('📢 Notification not shown for phase:', newPhase);
+            }
+          },
+          error: (err) => console.error('❌ Notification error:', err)
+        });
+
+        // Record cycle when entering breaks
+        if (newPhase === 'shortBreak' || newPhase === 'longBreak') {
+          const duration = this.getCurrentWorkDurationInMinutes();
+          this.pomodoroService.recordCycle(duration).subscribe({
+            next: () => console.log('✅ Cycle recorded (engine)'),
+            error: (err) => console.error('❌ Error recording cycle from engine:', err)
+          });
+        }
+      }, 100);
     }
   }
 

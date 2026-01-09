@@ -67,6 +67,27 @@ export class NotificationService {
 
     showPhaseNotification(phase: string): Observable<boolean> {
         return new Observable(subscriber => {
+            // If permission not requested yet, request it first
+            if (Notification.permission === 'default' && this.checkNotificationSupport()) {
+                console.log('📢 Notification permission not decided, requesting permission...');
+                Notification.requestPermission().then(permission => {
+                    this.permissionStatus$.next(permission as NotificationPermission);
+                    if (permission !== 'granted') {
+                        console.log('📢 Notification permission denied or dismissed');
+                        subscriber.next(false);
+                        subscriber.complete();
+                        return;
+                    }
+                    // After permission granted, try to show notification
+                    this.doShowPhaseNotification(phase, subscriber);
+                }).catch(err => {
+                    console.error('Error requesting notification permission:', err);
+                    subscriber.next(false);
+                    subscriber.complete();
+                });
+                return;
+            }
+
             // Check if this is the same phase as last notification (prevent duplicates)
             if (phase === this.lastNotifiedPhase) {
                 console.log('📢 Skipping notification - already notified for phase:', phase);
@@ -76,51 +97,14 @@ export class NotificationService {
             }
 
             if (!this.canShowNotifications()) {
+                console.log('📢 Cannot show notification - permission not granted or not supported');
                 subscriber.next(false);
                 subscriber.complete();
                 return;
             }
 
-            // Update last notified phase
-            this.lastNotifiedPhase = phase;
-
-            const config = this.getNotificationConfig(phase);
-
-            try {
-                const notification = new Notification(config.title, {
-                    body: config.body,
-                    icon: config.icon,
-                    badge: config.badge,
-                    silent: config.silent || false,
-                    requireInteraction: config.requireInteraction || false,
-                    tag: config.tag || 'pomodoro-phase'
-                });
-
-                // Setup event listeners
-                notification.onshow = () => {
-                    this.playNotificationSound();
-                    subscriber.next(true);
-                };
-
-                notification.onerror = () => {
-                    subscriber.next(false);
-                    subscriber.complete();
-                };
-
-                notification.onclose = () => {
-                    subscriber.complete();
-                };
-
-                // Auto close after 5 seconds
-                setTimeout(() => {
-                    notification.close();
-                }, 5000);
-
-            } catch (error) {
-                console.error('Failed to show notification:', error);
-                subscriber.next(false);
-                subscriber.complete();
-            }
+            // Proceed to show notification
+            this.doShowPhaseNotification(phase, subscriber);
         });
     }
 
@@ -213,6 +197,81 @@ export class NotificationService {
 
         } catch (error) {
             // Audio not supported
+        }
+    }
+
+    // Extracted to separate function to keep showPhaseNotification readable
+    private doShowPhaseNotification(phase: string, subscriber: any) {
+        // Update last notified phase
+        this.lastNotifiedPhase = phase;
+
+        const config = this.getNotificationConfig(phase);
+
+        try {
+            // If running inside Electron, prefer native notification via main process
+            if ((window as any)?.electronAPI?.showNotification) {
+                const payload = { title: config.title, body: config.body, silent: config.silent || false, icon: config.icon };
+                (window as any).electronAPI.showNotification(payload).then((ok: boolean) => {
+                    if (ok) {
+                        // Play sound in renderer to keep behavior consistent
+                        this.playNotificationSound();
+                        subscriber.next(true);
+                    } else {
+                        // Fallback to browser Notification if native failed
+                        try {
+                            const n = new Notification(config.title, { body: config.body, icon: config.icon, tag: config.tag || 'pomodoro-phase' });
+                            n.onshow = () => { this.playNotificationSound(); subscriber.next(true); };
+                            n.onerror = () => { subscriber.next(false); subscriber.complete(); };
+                            n.onclose = () => subscriber.complete();
+                            setTimeout(() => n.close(), 5000);
+                        } catch (err) {
+                            console.error('Failed to show fallback browser notification:', err);
+                            subscriber.next(false);
+                            subscriber.complete();
+                        }
+                    }
+                }).catch((err: any) => {
+                    console.error('Error invoking native notification:', err);
+                    subscriber.next(false);
+                    subscriber.complete();
+                });
+                return;
+            }
+
+            // Browser path
+            const notification = new Notification(config.title, {
+                body: config.body,
+                icon: config.icon,
+                badge: config.badge,
+                silent: config.silent || false,
+                requireInteraction: config.requireInteraction || false,
+                tag: config.tag || 'pomodoro-phase'
+            });
+
+            // Setup event listeners
+            notification.onshow = () => {
+                this.playNotificationSound();
+                subscriber.next(true);
+            };
+
+            notification.onerror = () => {
+                subscriber.next(false);
+                subscriber.complete();
+            };
+
+            notification.onclose = () => {
+                subscriber.complete();
+            };
+
+            // Auto close after 5 seconds
+            setTimeout(() => {
+                notification.close();
+            }, 5000);
+
+        } catch (error) {
+            console.error('Failed to show notification:', error);
+            subscriber.next(false);
+            subscriber.complete();
         }
     }
 

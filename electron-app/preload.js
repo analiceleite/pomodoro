@@ -13,6 +13,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   pipAction: (action) => ipcRenderer.invoke('pip-action', action),
   sendDataToPiP: (data) => ipcRenderer.invoke('send-data-to-pip', data),
 
+  // Native notification helper
+  showNotification: (payload) => ipcRenderer.invoke('show-notification', payload),
+
   // Listeners
   onPipActionReceived: (callback) => {
     ipcRenderer.on('pip-action-received', (event, action) => callback(action));

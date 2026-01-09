@@ -71,6 +71,8 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    // Reset timer state when component initializes (but don't register cycles)
+    this.timerService.completeReset();
     this.setupSubscriptions();
     this.loadWorkDurationSettings();
     this.loadTodayStats();

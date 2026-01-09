@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, interval, Subscription } from 'rxjs';
 import { map, takeWhile, tap, filter } from 'rxjs/operators';
 import { TimerConfigService } from './timer-config.service';
 import { TimerUiService } from './timer-ui.service';
@@ -9,7 +9,7 @@ import { TimerState, createInitialState } from './timer-state';
 export class TimerEngineService {
   private timerState$: BehaviorSubject<TimerState>;
   private timerSubscription?: Subscription;
-  private onPhaseComplete$ = new BehaviorSubject<string>('');
+  private onPhaseComplete$ = new Subject<string>();
 
   constructor(private config: TimerConfigService, private ui: TimerUiService) {
     this.timerState$ = new BehaviorSubject<TimerState>(createInitialState(this.config.getWorkDurationSeconds()));
@@ -20,7 +20,7 @@ export class TimerEngineService {
   }
 
   get phaseComplete$(): Observable<string> {
-    return this.onPhaseComplete$.asObservable().pipe(filter(phase => phase !== ''));
+    return this.onPhaseComplete$.asObservable();
   }
 
   get progress$(): Observable<number> {
@@ -65,7 +65,7 @@ export class TimerEngineService {
   completeReset(): void {
     this.pause();
     this.timerSubscription?.unsubscribe();
-    this.onPhaseComplete$.next('');
+    // Don't emit a clearing event here — Subject does not retain state, so no need to clear
     this.updateState({
       timeLeft: this.config.getWorkDurationSeconds(),
       currentPhase: 'work',

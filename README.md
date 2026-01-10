@@ -1,4 +1,4 @@
-# 🍅 Analice Pomodoro Timer
+# 🍅 Pomodoro Timer
 
 Personal productivity app built with Angular, Node.js, Electron, and SQLite for Windows.
 

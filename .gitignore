@@ -14,8 +14,6 @@ yarn-error.log*
 # Build outputs
 dist/
 
-clean-install.ps1
-
 # Releases - keep only installers and main executables
 releases/builder-debug.yml
 releases/builder-effective-config.yaml

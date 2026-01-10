@@ -141,11 +141,11 @@ function setupIPCHandlers(mainWindow) {
             const notif = new Notification({
                 title: payload.title || 'Pomodoro',
                 body: payload.body || '',
-                silent: payload.silent || false
+                silent: true  // Sempre silencioso para evitar voz do sistema
             });
 
             notif.show();
-            logInfo('Native notification shown from main process', payload);
+            logInfo('Native notification shown from main process (silent)', payload);
             return true;
         } catch (err) {
             console.error('❌ Failed to show native notification:', err);

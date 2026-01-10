@@ -166,19 +166,22 @@ export class NotificationService {
                 title: '🦭 Hora de Trabalhar!',
                 body: 'Foca por 25 minutos!',
                 icon: './assets/icons/seal.png',
-                tag: 'pomodoro-work'
+                tag: 'pomodoro-work',
+                silent: true  
             },
             shortBreak: {
                 title: '☕ Pausa Curta',
                 body: 'Descanse por 5 minutos.',
                 icon: './assets/icons/coffee-break.png',
-                tag: 'pomodoro-short-break'
+                tag: 'pomodoro-short-break',
+                silent: true  // Evitar narração por voz
             },
             longBreak: {
                 title: '🏖️ Pausa Longa',
                 body: 'Você merece! Descanse por 15 minutos.',
                 icon: './assets/icons/coffee-break.png',
-                tag: 'pomodoro-long-break'
+                tag: 'pomodoro-long-break',
+                silent: true  // Evitar narração por voz
             }
         };
 
@@ -210,7 +213,11 @@ export class NotificationService {
         try {
             // If running inside Electron, prefer native notification via main process
             if ((window as any)?.electronAPI?.showNotification) {
-                const payload = { title: config.title, body: config.body, silent: config.silent || false };
+                const payload = { 
+                    title: config.title, 
+                    body: config.body, 
+                    silent: true  // Forçar silencioso para evitar voz do sistema
+                };
                 (window as any).electronAPI.showNotification(payload).then((ok: boolean) => {
                     if (ok) {
                         // Play sound in renderer to keep behavior consistent

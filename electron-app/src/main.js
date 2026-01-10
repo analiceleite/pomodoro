@@ -20,7 +20,8 @@ app.on('ready', () => {
             nodeIntegration: false,
             contextIsolation: true,
             preload: path.join(__dirname, '../preload.js'),
-            webSecurity: false
+            webSecurity: false,
+            backgroundThrottling: false
         },
         show: false
     });

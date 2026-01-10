@@ -16,6 +16,7 @@ const timerDisplay = document.getElementById('timerDisplay');
 const progressFill = document.getElementById('progressFill');
 const cyclesInfo = document.getElementById('cyclesInfo');
 const toggleBtn = document.getElementById('toggleBtn');
+const skipBreakBtn = document.getElementById('skipBreakBtn');
 
 // Atualizar display
 function updateDisplay() {
@@ -45,6 +46,13 @@ function updateDisplay() {
     visibilityBtn.innerHTML = timerData.timerVisible ? '<i class="material-icons">visibility</i>' : '<i class="material-icons">visibility_off</i>';
     visibilityBtn.title = timerData.timerVisible ? 'Ocultar timer' : 'Mostrar timer';
 
+    // Botão pular pausa - mostrar apenas durante pausas
+    if (timerData.phase === 'shortBreak' || timerData.phase === 'longBreak') {
+        skipBreakBtn.style.display = 'inline-block';
+    } else {
+        skipBreakBtn.style.display = 'none';
+    }
+
     // Classes CSS baseadas na fase
     timerContainer.className = `timer-container phase-${timerData.phase}`;
     if (timerData.isRunning) {
@@ -65,6 +73,12 @@ function toggleTimer() {
 function resetTimer() {
     if (window.electron && window.electron.pipActions) {
         window.electron.pipActions.sendAction('reset');
+    }
+}
+
+function skipBreak() {
+    if (window.electron && window.electron.pipActions) {
+        window.electron.pipActions.sendAction('skipBreak');
     }
 }
 

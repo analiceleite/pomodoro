@@ -6,9 +6,10 @@
 
  body {
      font-family: 'Roboto Mono', monospace;
-     background: #121212;
+     background: transparent;
      color: #e0e0e0;
      height: 100vh;
+     width: 100vw;
      display: flex;
      align-items: center;
      justify-content: center;
@@ -17,23 +18,27 @@
      position: relative;
      margin: 0;
      padding: 0;
-     -webkit-app-region: drag;
-     /* Permite arrastar a janela */
+     -webkit-app-region: no-drag;
  }
 
  .timer-container {
      text-align: center;
-     padding: 20px;
+     padding: 16px;
      border-radius: 16px;
      background: #1e1e1e;
      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
      border-left: 4px solid var(--phase-color, #6964ba);
      transition: all 0.3s ease;
-     min-width: 200px;
-     height: 200px;
+     min-width: 180px;
+     width: 100%;
+     height: 100%;
+     min-height: 180px;
      position: relative;
-     -webkit-app-region: no-drag;
-     /* Desabilita drag nos controles */
+     display: flex;
+     flex-direction: column;
+     justify-content: space-between;
+     -webkit-app-region: drag;
+     cursor: move;
  }
 
  .timer-container.phase-work {
@@ -82,11 +87,15 @@
  }
 
  .timer-display {
-     font-size: 2.5rem;
+     font-size: clamp(1.5rem, 4vw, 2.5rem);
      font-weight: 700;
      color: var(--phase-color, #e0e0e0);
-     margin: 12px 0;
-     letter-spacing: -2px;
+     margin: 8px 0;
+     letter-spacing: -1px;
+     flex-grow: 1;
+     display: flex;
+     align-items: center;
+     justify-content: center;
  }
 
  .timer-display.pulse {
@@ -94,12 +103,13 @@
  }
 
  .phase-indicator {
-     font-size: 0.8rem;
+     font-size: clamp(0.6rem, 2vw, 0.8rem);
      color: var(--phase-color, #b0b0b0);
      font-weight: 500;
-     margin-bottom: 8px;
+     margin-bottom: 4px;
      text-transform: uppercase;
      letter-spacing: 1px;
+     flex-shrink: 0;
  }
 
  .progress-bar {
@@ -107,7 +117,8 @@
      background: #333333;
      border-radius: 2px;
      overflow: hidden;
-     margin: 16px 0 8px 0;
+     margin: 8px 0 4px 0;
+     flex-shrink: 0;
  }
 
  .progress-fill {
@@ -119,23 +130,25 @@
  }
 
  .cycles-info {
-     font-size: 0.7rem;
+     font-size: clamp(0.6rem, 1.5vw, 0.7rem);
      color: #b0b0b0;
      font-weight: 400;
-     margin-bottom: 12px;
+     margin-bottom: 8px;
+     flex-shrink: 0;
  }
 
  .controls {
      display: flex;
      justify-content: center;
-     gap: 8px;
-     margin-top: 12px;
+     gap: 6px;
+     margin-top: 8px;
      -webkit-app-region: no-drag;
+     flex-shrink: 0;
  }
 
  .control-btn {
-     width: 32px;
-     height: 32px;
+     width: clamp(28px, 6vw, 32px);
+     height: clamp(28px, 6vw, 32px);
      border: none;
      border-radius: 50%;
      background: var(--phase-color, #6964ba);
@@ -145,7 +158,8 @@
      align-items: center;
      justify-content: center;
      transition: all 0.2s ease;
-     font-size: 16px;
+     font-size: clamp(14px, 3vw, 16px);
+     -webkit-app-region: no-drag;
  }
 
  .control-btn:hover {
@@ -167,4 +181,15 @@
      50% {
          opacity: 0.7;
      }
+ }
+
+ /* Visual drag indicator */
+ .timer-container:hover {
+     border: 1px dashed var(--phase-color, #6964ba);
+     border-radius: 18px;
+ }
+
+ .timer-container:active {
+     opacity: 0.9;
+     transform: scale(0.98);
  }

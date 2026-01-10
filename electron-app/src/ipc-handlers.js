@@ -69,18 +69,24 @@ function setupIPCHandlers(mainWindow) {
         }
 
         pipWindow = new BrowserWindow({
-            width: 220,
-            height: 220,
+            width: 200,
+            height: 200,
+            minWidth: 150,
+            minHeight: 150,
+            maxWidth: 300,
+            maxHeight: 300,
             resizable: true,
             frame: false,
             alwaysOnTop: true,
             skipTaskbar: true,
             minimizable: false,
             maximizable: false,
+            transparent: true,
             webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true,
-                preload: preloadPath
+                preload: preloadPath,
+                backgroundThrottling: false
             },
             show: false
         });
@@ -135,8 +141,7 @@ function setupIPCHandlers(mainWindow) {
             const notif = new Notification({
                 title: payload.title || 'Pomodoro',
                 body: payload.body || '',
-                silent: payload.silent || false,
-                icon: payload.icon ? path.join(__dirname, '..', payload.icon) : undefined
+                silent: payload.silent || false
             });
 
             notif.show();

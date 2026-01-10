@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PomodoroService } from '../services/pomodoro.service.js';
+import { PomodoroService } from '../services/pomodoro.service';
 
 const pomodoroService = new PomodoroService();
 

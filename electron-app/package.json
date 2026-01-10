@@ -1,6 +1,6 @@
 {
   "name": "pomodoro-electron",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "src/main.js",
   "description": "Pomodoro Timer - Desktop Application",
   "author": "Analice Leite",
@@ -35,8 +35,14 @@
         "from": "../backend",
         "to": "backend",
         "filter": [
-          "!node_modules",
-          "!src"
+          "package.json",
+          "dist/**/*",
+          "node_modules/**/*",
+          "!src/**/*",
+          "!tsconfig.json",
+          "!.env*",
+          "!.gitignore",
+          "!*.log"
         ]
       }
     ],

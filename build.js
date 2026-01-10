@@ -1,7 +1,6 @@
 const { spawn } = require('child_process');
 const { logInfo, logSuccess, logError, logWarning } = require('./electron-app/src/logger');
 const fs = require('fs');
-const path = require('path');
 
 async function runCommand(command, args, cwd) {
     return new Promise((resolve, reject) => {

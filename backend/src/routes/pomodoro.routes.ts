@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { PomodoroController } from '../controllers/pomodoro.controller.js';
+import { PomodoroController } from '../controllers/pomodoro.controller';
 
 const router = Router();
 const controller = new PomodoroController();

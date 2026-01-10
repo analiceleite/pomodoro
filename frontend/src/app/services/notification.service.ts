@@ -164,7 +164,7 @@ export class NotificationService {
         const configs: Record<string, NotificationConfig> = {
             work: {
                 title: '🦭 Hora de Trabalhar!',
-                body: 'Analice, foca por 25 minutos!',
+                body: 'Foca por 25 minutos!',
                 icon: './assets/icons/seal.png',
                 tag: 'pomodoro-work'
             },
@@ -176,7 +176,7 @@ export class NotificationService {
             },
             longBreak: {
                 title: '🏖️ Pausa Longa',
-                body: 'Analice, você merece! Descanse por 15 minutos.',
+                body: 'Você merece! Descanse por 15 minutos.',
                 icon: './assets/icons/coffee-break.png',
                 tag: 'pomodoro-long-break'
             }
@@ -210,7 +210,7 @@ export class NotificationService {
         try {
             // If running inside Electron, prefer native notification via main process
             if ((window as any)?.electronAPI?.showNotification) {
-                const payload = { title: config.title, body: config.body, silent: config.silent || false, icon: config.icon };
+                const payload = { title: config.title, body: config.body, silent: config.silent || false };
                 (window as any).electronAPI.showNotification(payload).then((ok: boolean) => {
                     if (ok) {
                         // Play sound in renderer to keep behavior consistent

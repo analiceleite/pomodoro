@@ -138,15 +138,18 @@ export class TimerEngineService {
       setTimeout(() => {
         this.onPhaseComplete$.next(newPhase);
 
-        // Trigger notification regardless of component visibility
-        this.notificationService.showPhaseNotification(newPhase).subscribe({
-          next: (shown) => {
-            if (!shown) {
-              console.log('📢 Notification not shown for phase:', newPhase);
-            }
-          },
-          error: (err) => console.error('❌ Notification error:', err)
-        });
+        // Trigger notification when a cycle (work phase) is completed
+        if (current.currentPhase === 'work') {
+          this.notificationService.showPhaseNotification('work').subscribe({
+            next: (shown) => {
+              if (!shown) {
+                console.log('📢 Notification not shown for completed work cycle');
+              }
+            
+            },
+            error: (err) => console.error('❌ Notification error:', err)
+          });
+        }
 
         // Record cycle when entering breaks
         if (newPhase === 'shortBreak' || newPhase === 'longBreak') {

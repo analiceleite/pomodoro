@@ -90,26 +90,11 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   }
 
   private setupSubscriptions(): void {
-    // Subscribe to phase changes for notifications and recording cycles
+    // Subscribe to phase changes for notifications
     this.timerService.phaseComplete$
       .pipe(takeUntil(this.destroy$))
       .subscribe(phase => {
         console.log('Phase completed:', phase);
-
-        // Record cycle when work phase completes
-        if (phase === 'shortBreak' || phase === 'longBreak') {
-          console.log(`🎯 Fase ${phase} completada - registrando ciclo no backend`);
-          const durationMinutes = this.timerService.getCurrentWorkDurationInMinutes();
-          this.pomodoroService.recordCycle(durationMinutes).subscribe({
-            next: (response) => {
-              console.log('✅ Ciclo registrado com sucesso no backend:', response);
-              this.loadTodayStats();
-            },
-            error: (error) => {
-              console.error('❌ Erro ao registrar ciclo no backend:', error);
-            }
-          });
-        }
 
         // Show notification for phase change
         this.notificationService.showPhaseNotification(phase)
@@ -122,6 +107,14 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
             },
             error: (error) => console.error('Notification error:', error)
           });
+      });
+
+    // Subscribe to cycle completion to update stats in real-time
+    this.pomodoroService.onCycleCompleted
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        console.log('🔄 Ciclo completado - atualizando estatísticas em tempo real');
+        this.loadTodayStats();
       });
 
     // Subscribe to data clearing events to reset timer completely
@@ -168,6 +161,9 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
           break;
         case 'reset':
           this.reset();
+          break;
+        case 'skipBreak':
+          this.skipBreak();
           break;
         default:
           console.warn('Unknown action from PiP:', action);
@@ -272,12 +268,6 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
     return minutes === 60 ? '1h' : `${minutes}min`;
   }
 
-  // Adicione estas funções ao seu componente TypeScript
-
-  /**
-   * Formata a duração em minutos para exibição legível
-   * Se > 60 minutos, mostra em horas
-   */
   formatDurationLabel(minutes: number): string {
     if (minutes >= 60) {
       const hours = Math.floor(minutes / 60);

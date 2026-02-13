@@ -2,7 +2,10 @@
 
 Personal productivity app built with Angular, Node.js, Electron, and SQLite for Windows.
 
----
+![Timer - Tela Principal](./docs/home.png)
+
+![Estatísticas](./docs/statistics.png)
+
 
 ## 📥 Download & Install
 
@@ -14,7 +17,6 @@ Simply download `Analice Pomodoro Timer-Setup-1.0.0.exe` and run it to install t
 
 > 💡 **Tip:** You can also use the portable version in `releases/win-unpacked/` - just run the `.exe` directly without installation.
 
----
 
 ## ✨ Features
 
@@ -25,21 +27,10 @@ Simply download `Analice Pomodoro Timer-Setup-1.0.0.exe` and run it to install t
 - **Offline Support**: Fully functional without an internet connection.
 - **SQLite Integration**: Local database for storing session history.
 
----
-
-## 🖼️ Screenshots
-
-![Timer - Tela Principal](./docs/home.png)
-
-![Estatísticas](./docs/statistics.png)
-
----
-
 ## 📋 Current Version
 
 **1.0.0 Beta**
 
----
 
 ## 🔧 Technical Details (For Developers)
 
@@ -68,16 +59,12 @@ npm run build
 # The installer will be generated in the releases folder
 ```
 
----
-
 ## 📝 Notes
 
 - The app includes an embedded SQLite database (`pomodoro.db`) for local data storage.
 - Ensure the `backend` folder, `preload.js`, and database file are included during the build process.
 - Update the app version in `package.json` before generating a new build.
 - Picture-in-picture features are only available in the Electron version, not in browser mode.
-
----
 
 ## 📄 License
 

@@ -30,8 +30,11 @@ export class PomodoroService {
     return this.dataCleared$.asObservable();
   }
 
-  recordCycle(durationMinutes?: number): Observable<any> {
-    const payload = durationMinutes ? { durationMinutes } : {};
+  recordCycle(durationMinutes?: number, sessionType?: string): Observable<any> {
+    const payload = {
+      ...(durationMinutes !== undefined && { durationMinutes }),
+      ...(sessionType !== undefined && { sessionType })
+    };
     return this.http.post(`${this.apiUrl}/cycle`, payload).pipe(
       retry(2),
       tap({

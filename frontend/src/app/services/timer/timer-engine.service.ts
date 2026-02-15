@@ -154,7 +154,7 @@ export class TimerEngineService {
         // Record cycle when entering breaks
         if (newPhase === 'shortBreak' || newPhase === 'longBreak') {
           const duration = this.getCurrentWorkDurationInMinutes();
-          this.pomodoroService.recordCycle(duration).subscribe({
+          this.pomodoroService.recordCycle(duration, 'pomodoro').subscribe({
             next: () => console.log('✅ Cycle recorded (engine)'),
             error: (err) => console.error('❌ Error recording cycle from engine:', err)
           });

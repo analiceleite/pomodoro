@@ -16,6 +16,9 @@ export class PictureInPictureService {
   // Estado da janela Picture-in-Picture
   private isInPiP$ = new BehaviorSubject<boolean>(false);
 
+  // Tipo de componente ativo
+  private activeComponentType: 'timer' | 'stopwatch' = 'timer';
+
   // Dimensões da janela PiP
   private pipDimensions: { width: number; height: number } | null = null;
 
@@ -46,6 +49,15 @@ export class PictureInPictureService {
 
   setPiPDimensions(width: number, height: number): void {
     this.pipDimensions = { width, height };
+  }
+
+  setActiveComponentType(type: 'timer' | 'stopwatch'): void {
+    this.activeComponentType = type;
+    console.log(`🎯 Componente ativo definido para: ${type}`);
+  }
+
+  getActiveComponentType(): 'timer' | 'stopwatch' {
+    return this.activeComponentType;
   }
 
   // =========================
@@ -91,7 +103,6 @@ export class PictureInPictureService {
       console.error('❌ Erro ao fechar Picture-in-Picture:', error);
     }
   }
-
   async sendDataToPiP(data: any): Promise<void> {
     if (!this.isPiPActive() || !this.isElectron || !(window as any)?.electronAPI) {
       return;
@@ -100,6 +111,7 @@ export class PictureInPictureService {
     try {
       // Mapear dados para o formato esperado pela janela PiP
       const pipData = {
+        componentType: this.activeComponentType, 
         phase: data.currentPhase || 'work',
         timeRemaining: data.timeLeft || 0,
         isRunning: data.isRunning || false,
@@ -108,6 +120,7 @@ export class PictureInPictureService {
         cycleCount: (data.cycles || 0) + 1
       };
       
+      console.log('📤 Enviando dados para PiP:', pipData); // Debug
       await (window as any).electronAPI.sendDataToPiP(pipData);
     } catch (error) {
       console.error('❌ Erro ao enviar dados para Picture-in-Picture:', error);

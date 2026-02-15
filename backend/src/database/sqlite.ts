@@ -23,32 +23,48 @@ db.exec(`
   CREATE TABLE IF NOT EXISTS completed_cycles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    duration_minutes INTEGER DEFAULT 25
+    duration_minutes INTEGER DEFAULT 25,
+    session_type TEXT DEFAULT 'pomodoro'
   );
 `);
 
-// Adicionar coluna duration_minutes se ela não existir (para bancos existentes)
+// Adicionar colunas ausentes para bancos existentes
 try {
   const tableInfo = db.prepare("PRAGMA table_info(completed_cycles)").all();
   const hasDurationColumn = tableInfo.some((col: any) => col.name === 'duration_minutes');
+  const hasSessionTypeColumn = tableInfo.some((col: any) => col.name === 'session_type');
   
   if (!hasDurationColumn) {
     console.log('🔄 Adicionando coluna duration_minutes à tabela existente...');
     db.exec(`ALTER TABLE completed_cycles ADD COLUMN duration_minutes INTEGER DEFAULT 25`);
     console.log('✅ Coluna duration_minutes adicionada com sucesso');
   }
+
+  if (!hasSessionTypeColumn) {
+    console.log('🔄 Adicionando coluna session_type à tabela existente...');
+    db.exec(`ALTER TABLE completed_cycles ADD COLUMN session_type TEXT DEFAULT 'pomodoro'`);
+    console.log('✅ Coluna session_type adicionada com sucesso');
+  }
 } catch (error) {
   console.error('❌ Erro na migração da tabela:', error);
 }
 
-export function addCompletedCycle(durationMinutes: number = 25) {
-  const stmt = db.prepare('INSERT INTO completed_cycles (duration_minutes) VALUES (?)');
-  stmt.run(durationMinutes);
+export function addCompletedCycle(durationMinutes: number = 25, sessionType: string = 'pomodoro') {
+  const stmt = db.prepare('INSERT INTO completed_cycles (duration_minutes, session_type) VALUES (?, ?)');
+  stmt.run(durationMinutes, sessionType);
 }
 
 export function getDailyStats() {
+  // Contar ciclos: Pomodoros tradicionais (25 min) + sessões de stopwatch > 15 minutos
   const stmt = db.prepare(`
-    SELECT DATE(timestamp) as date, COUNT(*) as cycles, SUM(duration_minutes) as total_minutes
+    SELECT 
+      DATE(timestamp) as date, 
+      SUM(CASE 
+        WHEN session_type = 'pomodoro' THEN 1 
+        WHEN session_type = 'stopwatch' AND duration_minutes > 15 THEN 1 
+        ELSE 0 
+      END) as cycles,
+      SUM(duration_minutes) as total_minutes
     FROM completed_cycles
     GROUP BY DATE(timestamp)
     ORDER BY date DESC
@@ -56,9 +72,9 @@ export function getDailyStats() {
   const rows = stmt.all();
   return rows.map((row: any) => ({
     date: row.date,
-    cycles: row.cycles,
-    totalMinutes: row.total_minutes,
-    hours: row.total_minutes / 60
+    cycles: row.cycles || 0,
+    totalMinutes: row.total_minutes || 0,
+    hours: (row.total_minutes || 0) / 60
   }));
 }
 

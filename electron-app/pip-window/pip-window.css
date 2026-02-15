@@ -59,6 +59,31 @@
      --phase-color: #1e88e5;
  }
 
+ /* Estilos para componente Stopwatch */
+ .timer-container.component-stopwatch {
+     background: linear-gradient(135deg, #2e3a3e 0%, #1e1e1e 100%);
+     border-left-color: #00D9FF;
+     --phase-color: #00D9FF;
+ }
+
+ /* Fallback para stopwatch quando não há classe phase */
+ .timer-container.component-stopwatch.phase-stopwatch {
+     background: linear-gradient(135deg, #2e3a3e 0%, #1e1e1e 100%);
+     border-left-color: #00D9FF;
+     --phase-color: #00D9FF;
+ }
+
+ .component-type {
+     font-size: clamp(0.5rem, 1.5vw, 0.65rem);
+     color: var(--phase-color, #b0b0b0);
+     font-weight: 600;
+     margin-bottom: 2px;
+     text-transform: uppercase;
+     letter-spacing: 1.5px;
+     flex-shrink: 0;
+     opacity: 0.8;
+ }
+
  .close-btn {
      position: absolute;
      top: 8px;

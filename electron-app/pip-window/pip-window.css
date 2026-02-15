@@ -62,15 +62,15 @@
  /* Estilos para componente Stopwatch */
  .timer-container.component-stopwatch {
      background: linear-gradient(135deg, #2e3a3e 0%, #1e1e1e 100%);
-     border-left-color: #00D9FF;
-     --phase-color: #00D9FF;
+     border-left-color: #38c6df;
+     --phase-color: #38c6df;
  }
 
  /* Fallback para stopwatch quando não há classe phase */
  .timer-container.component-stopwatch.phase-stopwatch {
      background: linear-gradient(135deg, #2e3a3e 0%, #1e1e1e 100%);
-     border-left-color: #00D9FF;
-     --phase-color: #00D9FF;
+     border-left-color: #38c6df;
+     --phase-color: #38c6df;
  }
 
  .component-type {

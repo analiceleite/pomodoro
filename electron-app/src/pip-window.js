@@ -19,6 +19,7 @@ function createPiPWindow(mainWindow) {
         skipTaskbar: true,
         minimizable: false,
         maximizable: false,
+        icon: path.join(__dirname, '../assets/icon.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,

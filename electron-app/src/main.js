@@ -17,6 +17,7 @@ app.on('ready', async () => {
         height: 800,
         fullscreen: false,
         frame: true,
+        icon: path.join(__dirname, '../assets/icon.png'),
         webPreferences: {
             nodeIntegration: false,
             contextIsolation: true,

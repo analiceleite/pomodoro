@@ -18,7 +18,8 @@
     "files": [
       "src/**/*",
       "preload.js",
-      "pip-window/**/*"
+      "pip-window/**/*",
+      "assets/**/*"
     ],
     "extraResources": [
       {
@@ -48,7 +49,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "../frontend/public/clock.svg",
+      "icon": "assets/icon.ico",
       "requestedExecutionLevel": "asInvoker",
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },
@@ -59,9 +60,7 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "${productName}",
-      "uninstallDisplayName": "${productName}",
-      "installerIcon": "../frontend/public/clock.ico",
-      "uninstallerIcon": "../frontend/public/clock.ico"
+      "uninstallDisplayName": "${productName}"
     }
   },
   "devDependencies": {

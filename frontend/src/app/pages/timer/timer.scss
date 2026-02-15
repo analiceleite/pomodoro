@@ -77,7 +77,6 @@ $text-muted: #b0b0b0;
     gap: 12px;
     padding: 1rem;
     background: rgba(30, 30, 30, 0.6);
-    backdrop-filter: blur(10px);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     width: 100%;
@@ -176,7 +175,6 @@ $text-muted: #b0b0b0;
                 -webkit-appearance: none;
                 margin: 0;
             }
-            -moz-appearance: textfield;
         }
 
         button {
@@ -284,7 +282,6 @@ $text-muted: #b0b0b0;
     gap: 1rem;
     padding: 1rem;
     background: rgba(30, 30, 30, 0.8);
-    backdrop-filter: blur(10px);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.05);
     transition: all 0.3s ease;
@@ -361,7 +358,6 @@ $text-muted: #b0b0b0;
         color: #81c784;
         border-color: rgba(129, 199, 132, 0.3);
         background: rgba(129, 199, 132, 0.1);
-        backdrop-filter: blur(10px);
         transition: all 0.3s ease;
         font-size: 0.9rem;
         
@@ -383,7 +379,6 @@ $text-muted: #b0b0b0;
         color: $text-light;
         border-color: rgba(255, 255, 255, 0.1);
         background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
         transition: all 0.3s ease;
         font-size: 0.9rem;
 
@@ -408,7 +403,6 @@ $text-muted: #b0b0b0;
     background: rgba($primary-color, 0.1);
     border-radius: 16px;
     border: 1px solid rgba($primary-color, 0.3);
-    backdrop-filter: blur(10px);
     max-width: 350px;
 }
 

@@ -5,7 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil, combineLatest, take } from 'rxjs';
+import { Subject, takeUntil, combineLatest, take, skip } from 'rxjs';
 
 import { TimerService } from '../../services/timer.service';
 import { PictureInPictureService } from '../../services/picture-in-picture.service';
@@ -55,7 +55,8 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   Math = Math;
 
   get currentDayName(): string {
-    return new Date().toLocaleDateString('pt-BR', { weekday: 'long' });
+    const dayName = new Date().toLocaleDateString('pt-BR', { weekday: 'long' });
+    return dayName.charAt(0).toUpperCase() + dayName.slice(1);
   }
 
   constructor(
@@ -71,9 +72,27 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnInit() {
+    this.pipService.setActiveComponentType('timer');
     this.setupSubscriptions();
     this.loadWorkDurationSettings();
     this.loadTodayStats();
+    
+    // Enviar dados iniciais para PiP se estiver aberto
+    this.sendInitialDataToPiP();
+    
+    // Monitorar quando PiP é aberto e enviar dados atualizados
+    this.isInPiP$
+      .pipe(
+        takeUntil(this.destroy$),
+        skip(1) // Pular o primeiro valor (que é false)
+      )
+      .subscribe(isInPiP => {
+        if (isInPiP) {
+          console.log('🔔 PiP foi aberto - reenviando dados do Timer');
+          // Pequeno delay para garantir que o pip-window está pronto
+          setTimeout(() => this.sendInitialDataToPiP(), 200);
+        }
+      });
   }
 
   ngAfterViewInit() {
@@ -188,6 +207,25 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
       } else {
         this.start();
       }
+    });
+  }
+
+  // Enviar dados iniciais para PiP quando componente é ativado
+  private sendInitialDataToPiP(): void {
+    combineLatest([
+      this.timerState$,
+      this.progress$,
+      this.formattedTime$
+    ]).pipe(take(1), takeUntil(this.destroy$)).subscribe(([state, progress, formattedTime]) => {
+      this.pipService.sendDataToPiP({
+        currentPhase: state.currentPhase,
+        timeLeft: state.timeLeft,
+        isRunning: state.isRunning,
+        progress,
+        formattedTime,
+        cycles: this.todayStats.cycles || 0
+      });
+      console.log('📤 Dados iniciais do Timer enviados para PiP');
     });
   }
 

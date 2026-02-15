@@ -1,0 +1,310 @@
+// Variáveis para facilitar manutenção
+$primary-color: #6964ba;
+$accent-color: #f57c00;
+$bg-dark: #121212;
+$text-light: #e0e0e0;
+$text-muted: #b0b0b0;
+
+// Container Principal - Layout Otimizado
+.screensaver-container {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 100vw;
+    height: calc(100vh - 64px);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    font-family: 'Roboto', sans-serif;
+    background: $bg-dark;
+    color: $text-light;
+
+    // Background para stopwatch
+    &.phase-stopwatch { background: linear-gradient(135deg, #2e3a3e 0%, #1e1e1e 100%); }
+}
+
+// Conteúdo Principal - Compacto
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 24px;
+    min-height: 0;
+}
+
+// Indicador de Fase - Compacto
+.phase-section {
+    text-align: center;
+
+    .phase-indicator {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+
+        .phase-icon {
+            font-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            animation: gentle-pulse 3s ease-in-out infinite;
+            color: white;
+        }
+
+        .phase-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #00D9FF;
+        }
+    }
+}
+
+@keyframes gentle-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+// Timer - Compacto
+.timer-section {
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+
+    .timer-display {
+        font-size: 12rem;
+        font-weight: 100;
+        letter-spacing: -4px;
+        margin: 3rem;
+        line-height: 0.9;
+
+        &.pulse {
+            animation: timer-pulse 2s ease-in-out infinite;
+        }
+    }
+}
+
+@keyframes timer-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+// Barra de Progresso - Compacta
+.progress-bar-container {
+    width: 100%;
+
+    .progress-bar {
+        width: 100%;
+        height: 0.5rem;
+        background: #333;
+        border-radius: 3px;
+        overflow: hidden;
+
+        .progress-fill {
+            height: 100%;
+            background: #00D9FF;
+            border-radius: 3px;
+            transition: width 1s ease-out;
+            box-shadow: 0 0 12px rgba(#00D9FF, 0.5);
+        }
+    }
+
+    .progress-text {
+        color: $text-muted;
+        font-size: 0.85rem;
+        margin-top: 8px;
+        font-weight: 300;
+    }
+}
+
+// Seção Inferior - Compacta
+.bottom-section {
+    padding: 3rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+// Cards de Estatísticas - Layout Horizontal Compacto
+.stats-grid {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(30, 30, 30, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+    min-width: 200px;
+
+    &:hover {
+        background: rgba(50, 50, 50, 0.8);
+        transform: translateY(-2px);
+        border-color: rgba(#00D9FF, 0.3);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        width: 2rem;
+        height: 2rem;
+        color: #00D9FF;
+    }
+
+    .stat-info {
+        flex: 1;
+
+        .stat-value {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.1rem;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: $text-muted;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+}
+
+// Botões de Ação - Compactos
+.action-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .main-action-btn {
+        height: 48px;
+        padding: 0 24px;
+        font-size: 1rem;
+        font-weight: 500;
+        background: $primary-color;
+        color: white;
+        box-shadow: 0 6px 16px rgba($primary-color, 0.4);
+        transition: all 0.3s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba($primary-color, 0.6);
+        }
+
+        &.running {
+            background: #00D9FF;
+        }
+
+        mat-icon {
+            margin-right: 6px;
+            font-size: 1.2rem;
+        }
+    }
+
+    .secondary-action-btn {
+        height: 40px;
+        padding: 0 20px;
+        color: $text-light;
+        border-color: rgba(255, 255, 255, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+
+        &:hover {
+            background: rgba(#00D9FF, 0.2);
+            border-color: rgba(#00D9FF, 0.4);
+        }
+
+        mat-icon {
+            margin-right: 6px;
+            font-size: 1rem;
+        }
+    }
+}
+
+// Responsivo - Mobile First
+@media (max-width: 768px) {
+    .main-content {
+        padding: 16px;
+        gap: 20px;
+    }
+
+    .phase-indicator {
+        .phase-icon { font-size: 1.5rem !important; width: 1.5rem !important; height: 1.5rem !important; }
+        .phase-title { font-size: 1.2rem !important; letter-spacing: 1.5px !important; }
+    }
+
+    .timer-display {
+        font-size: clamp(3rem, 12vw, 6rem) !important;
+        letter-spacing: -3px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .bottom-section {
+        padding: 16px;
+    }
+
+    .stats-grid {
+        flex-direction: row;
+        gap: 12px;
+    }
+
+    .stat-card {
+        flex-direction: column;
+        padding: 10px 12px;
+        min-width: 100px;
+        text-align: center;
+
+        .stat-icon { font-size: 1.2rem !important; width: 1.2rem !important; height: 1.2rem !important; }
+        .stat-value { font-size: 1.1rem !important; }
+        .stat-label { font-size: 0.65rem !important; }
+    }
+
+    .action-section {
+        gap: 12px;
+
+        .main-action-btn {
+            height: 44px;
+            padding: 0 20px;
+            font-size: 0.95rem;
+        }
+
+        .secondary-action-btn {
+            height: 36px;
+            padding: 0 16px;
+            font-size: 0.85rem;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .screensaver-container {
+        top: 56px;
+        height: calc(100vh - 56px);
+    }
+
+    .phase-indicator {
+        .phase-icon { font-size: 1.2rem !important; width: 1.2rem !important; height: 1.2rem !important; }
+        .phase-title { font-size: 1rem !important; }
+    }
+
+    .stats-grid {
+        gap: 8px;
+    }
+
+    .stat-card {
+        min-width: 90px;
+        padding: 8px 10px;
+    }
+}

@@ -1,0 +1,72 @@
+<div class="screensaver-container phase-stopwatch">
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Phase Indicator -->
+    <div class="phase-section">
+      <div class="phase-indicator">
+        <mat-icon class="phase-icon">stopwatch</mat-icon>
+        <span class="phase-title">Cronômetro</span>
+      </div>
+    </div>
+
+    <!-- Central Timer Display -->
+    <div class="timer-section">
+      <div class="timer-display" [class.pulse]="(stopwatchState$ | async)?.isRunning">
+        {{ formattedTime$ | async }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Section -->
+  <div class="bottom-section">
+    <!-- Stats Cards - Layout Horizontal -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <mat-icon class="stat-icon">schedule</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ formatDuration((stopwatchState$ | async)?.elapsedSeconds || 0) }}</div>
+          <div class="stat-label">Tempo Decorrido</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <mat-icon class="stat-icon">timer</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ (stopwatchState$ | async)?.isRunning ? 'Em execução' : 'Parado' }}</div>
+          <div class="stat-label">Status</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <mat-icon class="stat-icon">today</mat-icon>
+        <div class="stat-info">
+          <div class="stat-value">{{ currentDayName }}</div>
+          <div class="stat-label">Hoje</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <button mat-fab [color]="(stopwatchState$ | async)?.isRunning ? 'accent' : 'primary'" 
+        (click)="togglePlayPause()"
+        class="main-action-btn" [class.running]="(stopwatchState$ | async)?.isRunning" extended>
+        <mat-icon>{{ (stopwatchState$ | async)?.isRunning ? 'pause' : 'play_arrow' }}</mat-icon>
+        {{ (stopwatchState$ | async)?.isRunning ? 'Pausar' : 'Iniciar' }}
+      </button>
+
+      <button mat-stroked-button color="warn" (click)="reset()" class="secondary-action-btn">
+        <mat-icon>refresh</mat-icon>
+        Resetar
+      </button>
+
+      <button mat-stroked-button color="primary" 
+        (click)="finishSession()"
+        [disabled]="(stopwatchState$ | async)?.elapsedSeconds === 0"
+        class="secondary-action-btn">
+        <mat-icon>check_circle</mat-icon>
+        Finalizar
+      </button>
+    </div>
+  </div>
+</div>

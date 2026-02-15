@@ -3,6 +3,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil, combineLatest, take, skip } from 'rxjs';
@@ -20,6 +22,8 @@ import { PomodoroService } from '../../services/pomodoro.service';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatSelectModule,
+    MatInputModule,
     CommonModule,
     FormsModule
   ],
@@ -44,9 +48,15 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
 
   // Work duration configuration
   availableWorkDurations: number[] = [];
+  workDurationOptions: number[] = []; // Opções de 5 em 5 minutos para o select
   currentWorkDuration: number = 25;
-  showCustomInput: boolean = false;
+  showDurationSelector: boolean = false;
   customDurationInput: number | null = null;
+
+  // Custom presets management
+  customPresets: number[] = [];
+  showPresetsManager: boolean = false;
+  newPresetInput: number | null = null;
 
   // Today's stats
   todayStats: any = { cycles: 0, totalMinutes: 0, hours: 0 };
@@ -75,6 +85,7 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
     this.pipService.setActiveComponentType('timer');
     this.setupSubscriptions();
     this.loadWorkDurationSettings();
+    this.loadCustomPresets();
     this.loadTodayStats();
     
     // Enviar dados iniciais para PiP se estiver aberto
@@ -271,7 +282,7 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
       }
       this.timerService.setWorkDuration(minutes);
       this.currentWorkDuration = minutes;
-      this.showCustomInput = false;
+      this.showDurationSelector = false;
       this.customDurationInput = null;
       console.log(`Work duration changed to ${minutes} minutes`);
     });
@@ -283,16 +294,25 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
         alert('Não é possível alterar a duração durante um timer ativo. Pause ou resete o timer primeiro.');
         return;
       }
-      this.showCustomInput = !this.showCustomInput;
-      if (this.showCustomInput) {
+      this.showDurationSelector = !this.showDurationSelector;
+      if (this.showDurationSelector) {
         this.customDurationInput = this.currentWorkDuration;
       }
     });
   }
 
+  onDurationSelectChange(value: number): void {
+    this.customDurationInput = value;
+  }
+
+  onDurationInputChange(value: number): void {
+    this.customDurationInput = value;
+  }
+
   applyCustomDuration(): void {
     if (this.customDurationInput && this.customDurationInput >= 1 && this.customDurationInput <= 120) {
       this.setWorkDuration(this.customDurationInput);
+      this.showDurationSelector = false;
     } else {
       alert('Por favor, insira um valor entre 1 e 120 minutos.');
     }
@@ -372,6 +392,95 @@ export class Timer implements OnInit, OnDestroy, AfterViewInit {
   private loadWorkDurationSettings(): void {
     this.availableWorkDurations = this.timerService.getAvailableWorkDurations();
     this.currentWorkDuration = this.timerService.getCurrentWorkDurationInMinutes();
+    this.generateWorkDurationOptions();
+  }
+
+  private generateWorkDurationOptions(): void {
+    // Gerar opções de 5 em 5 minutos, de 5 a 120 minutos
+    this.workDurationOptions = [];
+    for (let i = 5; i <= 120; i += 5) {
+      this.workDurationOptions.push(i);
+    }
+    console.log('📋 Opções de duração geradas:', this.workDurationOptions);
+  }
+
+  // ========== Custom Presets Management ==========
+  private loadCustomPresets(): void {
+    try {
+      const saved = localStorage.getItem('pomodoro_presets');
+      if (saved) {
+        this.customPresets = JSON.parse(saved);
+        this.customPresets.sort((a, b) => a - b); // Ordenar ascendente
+        console.log('📦 Presets customizados carregados:', this.customPresets);
+      } else {
+        // Presets padrão
+        this.customPresets = [15, 30];
+        this.saveCustomPresets();
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar presets customizados:', error);
+      this.customPresets = [15, 30];
+    }
+  }
+
+  private saveCustomPresets(): void {
+    try {
+      localStorage.setItem('pomodoro_presets', JSON.stringify(this.customPresets));
+      this.customPresets.sort((a, b) => a - b);
+      console.log('💾 Presets customizados salvos:', this.customPresets);
+    } catch (error) {
+      console.error('❌ Erro ao salvar presets customizados:', error);
+    }
+  }
+
+  togglePresetsManager(): void {
+    this.timerState$.pipe(take(1)).subscribe(state => {
+      if (state.isRunning) {
+        alert('Não é possível gerenciar presets durante um timer ativo. Pause ou resete o timer primeiro.');
+        return;
+      }
+      this.showPresetsManager = !this.showPresetsManager;
+      this.newPresetInput = null;
+    });
+  }
+
+  addPreset(): void {
+    if (!this.newPresetInput || this.newPresetInput < 1 || this.newPresetInput > 120) {
+      alert('Por favor, insira um valor entre 1 e 120 minutos.');
+      return;
+    }
+
+    // Verificar se já existe
+    if (this.customPresets.includes(this.newPresetInput)) {
+      alert('Este preset já existe!');
+      return;
+    }
+
+    this.customPresets.push(this.newPresetInput);
+    this.saveCustomPresets();
+    this.newPresetInput = null;
+    console.log('✅ Novo preset adicionado:', this.customPresets);
+  }
+
+  removePreset(preset: number): void {
+    const index = this.customPresets.indexOf(preset);
+    if (index >= 0) {
+      this.customPresets.splice(index, 1);
+      this.saveCustomPresets();
+      console.log('🗑️ Preset removido:', this.customPresets);
+    }
+  }
+
+  applyPreset(preset: number): void {
+    this.timerState$.pipe(take(1)).subscribe(state => {
+      if (state.isRunning) {
+        alert('Não é possível alterar a duração durante um timer ativo. Pause ou resete o timer primeiro.');
+        return;
+      }
+      this.setWorkDuration(preset);
+      this.showPresetsManager = false;
+      console.log('⏱️ Preset aplicado:', preset);
+    });
   }
 
 }

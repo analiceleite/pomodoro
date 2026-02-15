@@ -9,48 +9,123 @@
       </div>
     </div>
 
-    <!-- Duration Selector (apenas na fase work) -->
-    <div class="duration-selector" *ngIf="(timerState$ | async)?.currentPhase === 'work'">
-      <div class="duration-label">
-        <mat-icon>timer</mat-icon>
-        <span>Duração</span>
+    <!-- Duration & Presets Section -->
+    <div class="duration-presets-container" *ngIf="(timerState$ | async)?.currentPhase === 'work'">
+      <!-- Controls Row -->
+      <div class="controls-row">
+        <!-- Manual Edit Section -->
+        <div class="presets-section">
+          <span class="section-label">Manual:</span>
+          <div class="presets-inline">
+            <button mat-stroked-button class="preset-btn" (click)="toggleCustomInput()"
+              [disabled]="(timerState$ | async)?.isRunning || false" matTooltip="Editar duração manualmente">
+              {{ currentWorkDuration }}min
+              <mat-icon>edit</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Separator -->
+        <div class="separator"></div>
+
+        <!-- Quick Presets Section -->
+        <div class="presets-section">
+          <span class="section-label">Atalhos:</span>
+          <div class="presets-inline">
+            <button *ngFor="let preset of customPresets" class="preset-btn" (click)="applyPreset(preset)"
+              [disabled]="(timerState$ | async)?.isRunning || false" matTooltip="Atalho: {{preset}} minutos">
+              {{ preset }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Visual Separator -->
+        <div class="separator"></div>
+
+        <!-- Config Section -->
+        <div class="presets-section">
+          <span class="section-label">Configuração:</span>
+
+          <button mat-icon-button class="manage-btn" (click)="togglePresetsManager()"
+            [disabled]="(timerState$ | async)?.isRunning || false" matTooltip="Configurar atalhos">
+            <mat-icon>settings</mat-icon>
+          </button>
+        </div>
       </div>
-      <div class="duration-options">
-        <button 
-          *ngFor="let duration of availableWorkDurations"
-          mat-stroked-button
-          [class.active]="currentWorkDuration === duration && !showCustomInput"
-          (click)="setWorkDuration(duration)"
-          [disabled]="(timerState$ | async)?.isRunning">
-          {{ getWorkDurationLabel(duration) }}
-        </button>
-        <button 
-          mat-stroked-button
-          [class.active]="showCustomInput || !isPresetDuration(currentWorkDuration)"
-          (click)="toggleCustomInput()"
-          [disabled]="(timerState$ | async)?.isRunning">
-          <mat-icon>edit</mat-icon>
-        </button>
+
+      <!-- Duration Picker Panel -->
+      <div class="duration-picker" *ngIf="showDurationSelector">
+        <div class="picker-content">
+          <div class="select-wrapper">
+            <label>Selecione um tempo:</label>
+            <select [(ngModel)]="customDurationInput" (change)="onDurationSelectChange(customDurationInput || 0)"
+              class="duration-select" [disabled]="(timerState$ | async)?.isRunning || false">
+              <option *ngFor="let duration of workDurationOptions" [value]="duration">
+                {{ getWorkDurationLabel(duration) }}
+              </option>
+            </select>
+          </div>
+
+          <div class="input-wrapper">
+            <label>Ou digite o tempo (1-120 min):</label>
+            <div class="input-group">
+              <input type="number" [(ngModel)]="customDurationInput"
+                (change)="onDurationInputChange(customDurationInput || 0)" min="1" max="120"
+                placeholder="Digite em minutos" class="duration-input"
+                [disabled]="(timerState$ | async)?.isRunning || false">
+              <span class="input-suffix">min</span>
+            </div>
+          </div>
+
+          <div class="picker-actions">
+            <button mat-stroked-button (click)="showDurationSelector = false" class="cancel-btn">
+              Cancelar
+            </button>
+            <button mat-flat-button color="primary" (click)="applyCustomDuration()" class="apply-btn">
+              <mat-icon>check</mat-icon>
+              Confirmar
+            </button>
+          </div>
+        </div>
       </div>
-      
-      <!-- Custom Duration Input -->
-      <div class="custom-duration-input" *ngIf="showCustomInput">
-        <input 
-          type="number" 
-          [(ngModel)]="customDurationInput"
-          min="1" 
-          max="120" 
-          placeholder="Min (1-120)"
-          (keyup.enter)="applyCustomDuration()">
-        <button mat-flat-button color="primary" (click)="applyCustomDuration()">
-          <mat-icon>check</mat-icon>
-          OK
-        </button>
-      </div>
-      
-      <div class="current-duration-info" *ngIf="!isPresetDuration(currentWorkDuration)">
-        <mat-icon>info</mat-icon>
-        <span>{{ formatDurationLabel(currentWorkDuration) }}</span>
+
+      <!-- Presets Manager Panel -->
+      <div class="presets-manager" *ngIf="showPresetsManager">
+        <div class="manager-content">
+          <div class="manager-header">
+            <h3>Gerenciar Atalhos</h3>
+            <button mat-icon-button (click)="showPresetsManager = false" class="close-manager-btn">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+
+          <div class="add-preset-section">
+            <label>Novo atalho:</label>
+            <div class="add-preset-input">
+              <input type="number" [(ngModel)]="newPresetInput" min="1" max="120" placeholder="Minutos"
+                (keyup.enter)="addPreset()">
+              <button mat-flat-button color="primary" (click)="addPreset()">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="presets-management">
+            <label>Atalhos existentes:</label>
+            <div class="preset-manager-list">
+              <div *ngFor="let preset of customPresets" class="preset-manager-item">
+                <span class="preset-value">{{ preset }} min</span>
+                <button mat-icon-button (click)="removePreset(preset)" matTooltip="Remover">
+                  <mat-icon>delete_outline</mat-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button mat-button (click)="showPresetsManager = false" class="manager-close-btn" fullWidth>
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
 
@@ -110,11 +185,7 @@
       </button>
 
       <!-- Skip Break Button - Only visible during break phases -->
-      <button 
-        mat-stroked-button 
-        color="accent" 
-        (click)="skipBreak()" 
-        class="skip-break-btn"
+      <button mat-stroked-button color="accent" (click)="skipBreak()" class="skip-break-btn"
         *ngIf="(timerState$ | async)?.currentPhase === 'shortBreak' || (timerState$ | async)?.currentPhase === 'longBreak'">
         <mat-icon>skip_next</mat-icon>
         Pular Pausa

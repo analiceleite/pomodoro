@@ -1,6 +1,6 @@
 {
   "name": "pomodoro-electron",
-  "version": "1.0.1",
+  "version": "1.1.2",
   "main": "src/main.js",
   "description": "Pomodoro Timer - Desktop Application",
   "author": "Analice Leite",
@@ -48,7 +48,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "../frontend/public/clock.ico",
+      "icon": "../frontend/public/clock.svg",
       "requestedExecutionLevel": "asInvoker",
       "artifactName": "${productName}-Setup-${version}.${ext}"
     },

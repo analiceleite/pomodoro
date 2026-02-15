@@ -96,6 +96,12 @@ function setupIPCHandlers(mainWindow) {
         pipWindow.once('ready-to-show', () => {
             pipWindow.show();
             logInfo('Janela Picture-in-Picture criada');
+            
+            // Notificar o frontend para enviar dados iniciais
+            if (mainWindow && !mainWindow.isDestroyed()) {
+                mainWindow.webContents.send('pip-window-opened');
+                logInfo('Sinal enviado ao frontend para enviar dados iniciais ao PiP');
+            }
         });
 
         pipWindow.on('closed', () => {

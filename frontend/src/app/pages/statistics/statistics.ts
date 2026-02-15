@@ -209,6 +209,33 @@ export class Statistics implements OnInit, OnDestroy {
     });
   }
 
+  // Formatar horas com tratamento para valores muito pequenos
+  formatHours(hours: number): string {
+    // Se for muito pequeno (menor que 1 minuto = 0.0166h), arredondar para 0
+    if (hours < 0.0166) {
+      return '0.0';
+    }
+    return hours.toFixed(1);
+  }
+
+  // Formatar tempo de forma completa (horas e minutos ou apenas minutos)
+  formatTotalTime(hours: number): string {
+    const totalMinutes = Math.round(hours * 60);
+    
+    if (totalMinutes < 60) {
+      return `${totalMinutes}min`;
+    }
+    
+    const wholeHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    
+    if (remainingMinutes === 0) {
+      return `${wholeHours}h`;
+    }
+    
+    return `${wholeHours}h ${remainingMinutes}min`;
+  }
+
   // Confirmar limpeza de dados
   confirmClearData() {
     const confirmed = confirm('⚠️ Tem certeza que deseja limpar TODOS os dados? Esta ação não pode ser desfeita!');

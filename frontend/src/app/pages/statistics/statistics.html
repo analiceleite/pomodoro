@@ -25,8 +25,8 @@
           <mat-icon>schedule</mat-icon>
         </div>
         <div class="summary-data">
-          <div class="summary-value">{{ totalHours.toFixed(1) }}h</div>
-          <div class="summary-label">Total de Horas</div>
+          <div class="summary-value">{{ formatTotalTime(totalHours) }}</div>
+          <div class="summary-label">Total de Tempo</div>
         </div>
       </mat-card-content>
     </mat-card>
@@ -37,8 +37,8 @@
           <mat-icon>today</mat-icon>
         </div>
         <div class="summary-data">
-          <div class="summary-value">{{ todayHours.toFixed(1) }}h</div>
-          <div class="summary-label">Hoje</div>
+          <div class="summary-value">{{ formatTotalTime(todayHours) }}</div>
+          <div class="summary-label">Tempo de Hoje</div>
         </div>
       </mat-card-content>
     </mat-card>
@@ -49,7 +49,7 @@
           <mat-icon>trending_up</mat-icon>
         </div>
         <div class="summary-data">
-          <div class="summary-value">{{ averageHours.toFixed(1) }}h</div>
+          <div class="summary-value">{{ formatHours(averageHours) }}h</div>
           <div class="summary-label">Média Diária</div>
         </div>
       </mat-card-content>
@@ -95,7 +95,9 @@
               <span class="date-text">{{ formatDate(stat.date) }}</span>
               <span class="today-badge" *ngIf="isToday(stat.date)">Hoje</span>
             </div>
-            <div class="stat-hours">{{ stat.hours.toFixed(1) }}h</div>
+            <div class="stat-hours">
+              <div class="time-display">{{ formatTotalTime(stat.hours) }}</div>
+            </div>
           </div>
           
           <div class="stat-progress">
@@ -133,7 +135,7 @@
             <div class="bar" 
                  [style.height.%]="getChartHeight(stat.hours)"
                  [style.background]="getProgressColor(stat.hours)">
-              <span class="bar-value">{{ stat.hours.toFixed(1) }}</span>
+              <span class="bar-value">{{ formatTotalTime(stat.hours) }}</span>
             </div>
           </div>
           <div class="bar-label">{{ getDayName(stat.date) }}</div>

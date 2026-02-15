@@ -163,21 +163,21 @@ export class NotificationService {
     private getNotificationConfig(phase: string): NotificationConfig {
         const configs: Record<string, NotificationConfig> = {
             work: {
-                title: '🦭 Hora de Trabalhar!',
-                body: 'Foca por 25 minutos!',
+                title: 'Hora do foco',
+                body: 'Você consegue!',
                 icon: './assets/icons/seal.png',
                 tag: 'pomodoro-work',
                 silent: true  
             },
             shortBreak: {
-                title: '☕ Pausa Curta',
+                title: 'Pausa Curta',
                 body: 'Descanse por 5 minutos.',
                 icon: './assets/icons/coffee-break.png',
                 tag: 'pomodoro-short-break',
                 silent: true  // Evitar narração por voz
             },
             longBreak: {
-                title: '🏖️ Pausa Longa',
+                title: 'Pausa Longa',
                 body: 'Você merece! Descanse por 15 minutos.',
                 icon: './assets/icons/coffee-break.png',
                 tag: 'pomodoro-long-break',
